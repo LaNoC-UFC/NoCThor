@@ -1,0 +1,34 @@
+#!/bin/bash
+
+rsbrInp=./$1/*
+echo $rsbrInp
+simuInp=$2
+tableVHD="./Teste/NoC/"
+mkdir Stats
+
+for file in $rsbrInp
+do
+	fName=$(echo $file | cut -f3 -d "/")
+
+	mv $simuInp $fName
+	simuInp=$fName
+	java -jar SBR.jar $file
+	java -jar RBR.jar $file nmerge 1.0
+	mv Table_package.vhd $tableVHD
+
+	cat ard >> relat-$fName
+	echo " " >> relat-$fName
+	cat lw-Mean >> relat-$fName
+	echo " " >> relat-$fName
+	cat lw-Std >> relat-$fName
+	echo " " >> relat-$fName
+	cat region-max >> relat-$fName
+	echo " " >> relat-$fName
+	mv relat-$fName ./Stats
+
+	cd Teste
+	./lote $simuInp
+	cd ..
+
+	
+done

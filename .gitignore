@@ -1,0 +1,10 @@
+Teste/Out/*.txt
+Teste/In/*.txt
+Teste/work/
+Teste/transcript
+Teste/wave.do
+topologies/*.txt
+*~
+*.ini
+*.jar
+
