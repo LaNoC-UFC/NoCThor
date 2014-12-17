@@ -50,8 +50,8 @@ package HermesPackage is
 ---------------------------------------------------------
 -- CONSTANTS DEPENDENTES DO NUMERO DE ROTEADORES
 ---------------------------------------------------------
-	constant NUM_X : integer := 8;
-	constant NUM_Y : integer := 8;
+	constant NUM_X : integer := 2;
+	constant NUM_Y : integer := 2;
 
 	constant NROT: integer := NUM_X*NUM_Y;
 	
