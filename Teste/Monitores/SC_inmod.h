@@ -2,8 +2,8 @@
 #define IN_MOD
 
 #define TAM_FLIT 16
-#define NUM_ROT_X 8
-#define NUM_ROT_Y 8
+#define NUM_ROT_X 2
+#define NUM_ROT_Y 2
 #define NUM_ROT_Z 1
 #define NUM_EP NUM_ROT_X*NUM_ROT_Y
 #define NUM_ROT NUM_EP*NUM_ROT_Z

@@ -3,35 +3,24 @@ vlib work
 vmap work work
 
 # Packages
-vcom -work work -93 -explicit NoC/Hermes_package.vhd
-#vcom -work work -93 -explicit Hamming/HammingPack16.vhd
-
-# Hamming and fault blocks
-#vcom -work work -93 -explicit Hamming/Encoder.vhd
-#vcom -work work -93 -explicit Hamming/Decoder.vhd
-#vcom -work work -93 -explicit Hamming/fault_in.vhd
-
-# FPPM block
-#vcom -work work -93 -explicit FPPM/FPPM_AA00.vhd
+vcom -93 -explicit -nocheck -quiet NoC/Hermes_package.vhd
+vcom -93 -explicit -nocheck -quiet NoC/Table_package.vhd
 
 # NoC
-vcom -work work -93 -explicit NoC/Table_package.vhd
-#vcom -work work -93 -explicit NoC/Hermes_table.vhd
-vcom -work work -93 -explicit NoC/Hermes_RM.vhd
-vcom -work work -93 -explicit NoC/Hermes_buffer.vhd
-vcom -work work -93 -explicit NoC/FaultDetection.vhd
-vcom -work work -93 -explicit NoC/Hermes_switchcontrol.vhd
-vcom -work work -93 -explicit NoC/Hermes_crossbar.vhd
-vcom -work work -93 -explicit NoC/RouterCC.vhd
+vcom -93 -explicit -nocheck -quiet NoC/Hermes_RM.vhd
+vcom -93 -explicit -nocheck -quiet NoC/Hermes_buffer.vhd
+vcom -93 -explicit -nocheck -quiet NoC/FaultDetection.vhd
+vcom -93 -explicit -nocheck -quiet NoC/Hermes_switchcontrol.vhd
+vcom -93 -explicit -nocheck -quiet NoC/Hermes_crossbar.vhd
+vcom -93 -explicit -nocheck -quiet NoC/RouterCC.vhd
 
 # SystemC's stuff
-sccom -work work -g -explicit Monitores/SC_inmod.cpp
-sccom -work work -g -explicit Monitores/SC_outmod.cpp
-#sccom -work work -g -explicit Monitores/SC_failmod.cpp
+sccom -g -explicit -incr Monitores/SC_inmod.cpp
+sccom -g -explicit -incr Monitores/SC_outmod.cpp
 sccom -link
 
 # TestBench
-vcom -work work -93 -explicit NoC/NOC.vhd
-vcom -work work -93 -explicit topNoC.vhd
+vcom -93 -explicit -nocheck -quiet NoC/NOC.vhd
+vcom -93 -explicit -nocheck -quiet topNoC.vhd
 
 #quit -f
