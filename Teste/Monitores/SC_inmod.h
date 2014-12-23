@@ -1,29 +1,16 @@
 #ifndef IN_MOD
 #define IN_MOD
 
-#define TAM_FLIT 16
-#define NUM_ROT_X 2
-#define NUM_ROT_Y 2
-#define NUM_ROT_Z 1
-#define NUM_EP NUM_ROT_X*NUM_ROT_Y
-#define NUM_ROT NUM_EP*NUM_ROT_Z
-//#define NUM_CHARS 4
-
-#include <stdio.h>
-#include <string.h>
-#include <systemc.h>
+#include "SC_common.h"
 
 SC_MODULE(inputmodule)
 {
 	sc_in<sc_logic> clock;
 	sc_in<sc_logic> reset;
 	
-	//sc_in<sc_lv<TAM_FLIT/2> > address[NUM_ROT];
-	
 	sc_in<sc_logic> incredit[NUM_EP];
 	sc_out<sc_logic> outtx[NUM_EP];
 	sc_out<sc_lv<TAM_FLIT> > outdata[NUM_EP];
-	//sc_out<sc_lv<2> > //outCmd[NUM_EP];
 	
 	void inline outTx(int Indice, int Booleano)
 	{
