@@ -14,17 +14,6 @@ port(
 	h :       in  regNport;
 	ack_h :   out regNport;
 	data :    in  arrayNport_regflit;
-	c_ctrl : in std_logic;
-	c_CodControle : in regflit;
-	c_BuffCtrl : in buffControl;
-	c_buffTabelaFalhas_in: in arrayRegNport;
-	c_ce : in std_logic;
-	c_ceTF_in :  in  regNport;
-	c_error_dir: out regNport;
-	c_error_ArrayFind: out ArrayRouterControl;
-	c_tabelaFalhas : out regNport;
-	c_strLinkTst : in regNport;
-	c_faultTableFDM	: in regNPort;
 	sender :  in  regNport;
 	free :    out regNport;
 	mux_in :  out arrayNport_reg3;
@@ -54,15 +43,6 @@ architecture RoutingTable of SwitchControl is
 	signal find: RouterControl;
 	signal ceTable: std_logic := '0';
 	
--- sinais de controle de atualizacao da tabela de falhas
-	signal c_ceTF : std_logic := '0';
-	signal c_buffTabelaFalhas : regNport := (others=>'0');
-	--sinais da Tabela de Falhas
-	signal tabelaDeFalhas : regNPort := (others=>'0');
-	signal c_checked: regNPort:= (others=>'0');
-	signal c_checkedArray: arrayRegNport :=(others=>(others=>'0'));
-	signal dirBuff : std_logic_vector(NPORT-1 downto 0):= (others=> '0');
-	signal strLinkTstAll : std_logic := '0';
 begin
 	ask <= '1' when (h(LOCAL)='1' or h(EAST)='1' or h(WEST)='1' or h(NORTH)='1' or h(SOUTH)='1') else '0';
 	incoming <= CONV_VECTOR(sel);
@@ -107,57 +87,14 @@ begin
 	tx <= header((METADEFLIT - 1) downto QUARTOFLIT);
 	ty <= header((QUARTOFLIT - 1) downto 0);
 	
-	------------------------------------------------------------
-	--gravacao da tabela de falhas
-	------------------------------------------------------------
-	--registrador para tabela de falhas
-	process(reset,clock)
-	begin
-		if reset='1' then
-			tabelaDeFalhas <= (others=>'0'); 
-		elsif clock'event and clock='0' then
-			if c_ceTF='1' then
-				tabelaDeFalhas <= c_buffTabelaFalhas;
-			elsif strLinkTstAll = '1' then
-				tabelaDeFalhas <= c_faultTableFDM;
-			end if;
-		end if; 
-	end process;
-	
-	strLinkTstAll <= c_strLinkTst(0) or c_strLinkTst(1) or c_strLinkTst(2) or c_strLinkTst(3) or c_strLinkTst(4);
-	
-	c_buffTabelaFalhas <= ( c_buffTabelaFalhas_in(EAST)  OR
-									c_buffTabelaFalhas_in(WEST)  OR
-									c_buffTabelaFalhas_in(SOUTH) OR
-									c_buffTabelaFalhas_in(NORTH) OR
-									c_buffTabelaFalhas_in(LOCAL));
-	c_ceTF <= ( c_ceTF_in(EAST)  OR
-					c_ceTF_in(WEST)  OR
-					c_ceTF_in(SOUTH) OR
-					c_ceTF_in(NORTH) OR
-					c_ceTF_in(LOCAL));
-	------------------------------------------------------------
-	
-	process(clock,reset)
-	begin
-		c_error_ArrayFind <= (others=>invalidRegion);
-		c_error_ArrayFind(sel) <= find;
-	end process;
-	c_error_dir <= dir;
-	c_tabelafalhas <= tabelaDeFalhas;
-
 	RoutingMechanism : entity work.routingMechanism
 	generic map(
 		ramInit => ramInit)
 	port map(
 			clock => clock,
 			reset => reset,
-			buffCtrl => c_BuffCtrl,
-			ctrl=> c_Ctrl,
-			operacao => c_CodControle,
-			ceT => c_ce,
 			oe => ceTable,
-			dest => header((METADEFLIT - 1) downto 0),
+			dest => header(METADEFLIT-1 downto 0),
 			inputPort => sel,
 			outputPort => dir,
 			find => find

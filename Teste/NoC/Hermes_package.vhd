@@ -8,22 +8,6 @@ use IEEE.std_logic_arith.all;
 
 package HermesPackage is
 
------------------------------------------------------------------------
--- OCP PARAMETERS
------------------------------------------------------------------------
-
------------------- command Enconding - p. 13 ---------------------------
-	constant IDLE: Std_Logic_Vector(2 downto 0) :="000";
-	constant WR:   Std_Logic_Vector(2 downto 0) :="001";
-	constant RD:   Std_Logic_Vector(2 downto 0) :="010";
-	constant RDEX: Std_Logic_Vector(2 downto 0) :="011";
-	constant BCST: Std_Logic_Vector(2 downto 0) :="111";
------------------------Response Enconding------------------------------
-	constant DVA:  Std_Logic_Vector(1 downto 0) :="01";
-	constant ERR:  Std_Logic_Vector(1 downto 0) :="11";
-	constant NULO: Std_Logic_Vector(1 downto 0) :="00";
-	constant ALVO: Std_Logic_Vector(7 downto 0) :="00000000";
-
 ---------------------------------------------------------
 -- CONSTANTS INDEPENDENTES
 ---------------------------------------------------------
@@ -36,11 +20,12 @@ package HermesPackage is
 	constant LOCAL : integer := 4;
 
 ---------------------------------------------------------
--- CONSTANT DEPENDENTE DA LARGURA DE BANDA DA REDE
+-- CONSTANTS DEPENDENTES DA LARGURA DE BANDA DA REDE
 ---------------------------------------------------------
 	constant TAM_FLIT : integer range 1 to 64 := 16;
 	constant METADEFLIT : integer range 1 to 32 := (TAM_FLIT/2);
 	constant QUARTOFLIT : integer range 1 to 16 := (TAM_FLIT/4);
+
 ---------------------------------------------------------
 -- CONSTANTS DEPENDENTES DA PROFUNDIDADE DA FILA
 ---------------------------------------------------------
@@ -58,46 +43,9 @@ package HermesPackage is
 	constant MIN_X : integer := 0;
 	constant MIN_Y : integer := 0;
 	
-	constant MAX_X : integer := NUM_X-1;--m
-	constant MAX_Y : integer := NUM_Y-1;--m
+	constant MAX_X : integer := NUM_X-1;
+	constant MAX_Y : integer := NUM_Y-1;
 
----------------------------------------------------------
--- CONSTANT TB
----------------------------------------------------------
-	constant TAM_LINHA : integer := 200;
-
-	constant N0000: integer :=0;
-	constant ADDRESSN0000: std_logic_vector(7 downto 0) :="00000000";
-	constant N0100: integer :=1;
-	constant ADDRESSN0100: std_logic_vector(7 downto 0) :="00010000";
-	constant N0200: integer :=2;
-	constant ADDRESSN0200: std_logic_vector(7 downto 0) :="00100000";
-	constant N0300: integer :=3;
-	constant ADDRESSN0300: std_logic_vector(7 downto 0) :="00110000";
-	constant N0001: integer :=4;
-	constant ADDRESSN0001: std_logic_vector(7 downto 0) :="00000001";
-	constant N0101: integer :=5;
-	constant ADDRESSN0101: std_logic_vector(7 downto 0) :="00010001";
-	constant N0201: integer :=6;
-	constant ADDRESSN0201: std_logic_vector(7 downto 0) :="00100001";
-	constant N0301: integer :=7;
-	constant ADDRESSN0301: std_logic_vector(7 downto 0) :="00110001";
-	constant N0002: integer :=8;
-	constant ADDRESSN0002: std_logic_vector(7 downto 0) :="00000010";
-	constant N0102: integer :=9;
-	constant ADDRESSN0102: std_logic_vector(7 downto 0) :="00010010";
-	constant N0202: integer :=10;
-	constant ADDRESSN0202: std_logic_vector(7 downto 0) :="00100010";
-	constant N0302: integer :=11;
-	constant ADDRESSN0302: std_logic_vector(7 downto 0) :="00110010";
-	constant N0003: integer :=12;
-	constant ADDRESSN0003: std_logic_vector(7 downto 0) :="00000011";
-	constant N0103: integer :=13;
-	constant ADDRESSN0103: std_logic_vector(7 downto 0) :="00010011";
-	constant N0203: integer :=14;
-	constant ADDRESSN0203: std_logic_vector(7 downto 0) :="00100011";
-	constant N0303: integer :=15;
-	constant ADDRESSN0303: std_logic_vector(7 downto 0) :="00110011";
 ---------------------------------------------------------
 -- VARIAVEIS DO NOVO HARDWARE
 ---------------------------------------------------------
@@ -115,7 +63,6 @@ package HermesPackage is
 ---------------------------------------------------------
 -- SUBTIPOS, TIPOS E FUNCOES
 ---------------------------------------------------------
-
 	subtype reg3 is std_logic_vector(2 downto 0);
 	subtype reg8 is std_logic_vector(7 downto 0);
 	subtype reg32 is std_logic_vector(31 downto 0);
@@ -144,40 +91,10 @@ package HermesPackage is
 	type matrixNrot_Nport_regflit is array((NROT-1) downto 0) of arrayNport_regflit; -- a -- array(NROT)(NPORT)(TAM_FLIT)
 	type matrixNrot_Nport_reg3 is array((NROT-1) downto 0) of arrayNport_reg3;
 
-	-- constant ADDRESSN: arrayNrot_regmetadeflit :=(	x"00",
-	-- 												x"01",
-	-- 												x"02",
-	-- 												x"03",
-	-- 												x"04",
-													
-	-- 												x"10",
-	-- 												x"11",
-	-- 												x"12",
-	-- 												x"13",
-	-- 												x"14",
-													
-	-- 												x"20",
-	-- 												x"21",
-	-- 												x"22",
-	-- 												x"23",
-	-- 												x"24",
-													
-	-- 												x"30",
-	-- 												x"31",
-	-- 												x"32",
-	-- 												x"33",											
-	-- 												x"34",
-													
-	-- 												x"40",
-	-- 												x"41",
-	-- 												x"42",
-	-- 												x"43",											
-	-- 												x"44"
-	-- 												);
-
 ---------------------------------------------------------
 -- FUNCOES TB
 ---------------------------------------------------------
+	constant TAM_LINHA : integer := 200;
 	function CONV_VECTOR( letra : string(1 to TAM_LINHA);  pos: integer ) return std_logic_vector;
 	function CONV_HEX( int : integer ) return string;
 	function CONV_STRING_4BITS( dado : std_logic_vector(3 downto 0)) return string;

@@ -5,32 +5,32 @@ use work.HermesPackage.all;
 
 package TablePackage is
 
-constant NREG : integer := 3;
+constant NREG : integer := 2;
 constant MEMORY_SIZE : integer := NREG;
+constant NBITS : integer := 1;
+constant CELL_SIZE : integer := 2*NPORT+4*NBITS;
 
-type memory is array (0 to MEMORY_SIZE-1) of reg26;
+subtype cell is std_logic_vector(CELL_SIZE-1 downto 0);
+subtype regAddr is std_logic_vector(2*NBITS-1 downto 0);
+type memory is array (0 to MEMORY_SIZE-1) of cell;
 type tables is array (0 to NROT-1) of memory;
 
 constant TAB: tables :=(
- -- Router 00
-(("10100000100000001000000001"),
-("10001000000010001000100100"),
-("00000000000000000000000000")
+ -- Router 0.0
+(("10100101000001"),
+("10001011100100")
 ),
- -- Router 01
-(("11000000100010001000100001"),
-("10001000000000000000001000"),
-("10000000100000001000001001")
+ -- Router 0.1
+(("10001000001000"),
+("11000101100001")
 ),
- -- Router 10
-(("10000000100010001000100100"),
-("10000000000000000000000010"),
-("10000000000010000000100110")
+ -- Router 1.0
+(("10000000000010"),
+("10000011100100")
 ),
- -- Router 11
-(("10010000100000001000001000"),
-("11000000000000000000100010"),
-("00000000000000000000000000")
+ -- Router 1.1
+(("10010101001000"),
+("11000000100010")
 )
 );
 end TablePackage;
