@@ -46,7 +46,7 @@ use work.TablePackage.all;
 
 entity RouterCC is
 generic( 
-	address: regmetadeflit;
+	address: regflit;
 	ramInit: memory);
 port(
 	clock:     in  std_logic;
@@ -70,7 +70,7 @@ signal free: regNport := (others=>'0');
 
 begin
 
-	buff : for i in 0 to (NPORT-1) generate
+	buff : for i in EAST to LOCAL generate
 		B : entity work.Hermes_buffer
 		port map(
 			clock => clock,
@@ -85,6 +85,8 @@ begin
 			clock_rx => clock_rx(i),
 			data_ack => data_ack(i),
 			credit_o => credit_o(i));
+			
+		clock_tx(i) <= clock;
 	end generate buff;
 
 	SwitchControl : Entity work.SwitchControl
@@ -114,9 +116,5 @@ begin
 		tx => tx,
 		data_out => data_out,
 		credit_i => credit_i);
-
-	CLK_TX : for i in 0 to(NPORT-1) generate
-		clock_tx(i) <= clock;
-	end generate CLK_TX;  
 
 end RouterCC;

@@ -6,7 +6,7 @@ use work.TablePackage.all;
 
 entity SwitchControl is
 generic(
-	address : regmetadeflit := (others=>'0');
+	address : regflit := (others=>'0');
 	ramInit : memory);
 port(
 	clock :   in  std_logic;
@@ -33,7 +33,6 @@ architecture RoutingTable of SwitchControl is
 
 -- sinais do controle
 	signal indice_dir: integer range 0 to (NPORT-1) := 0;
-	signal tx,ty: regquartoflit := (others=> '0');
 	signal auxfree: regNport := (others=> '0');
 	signal source:  arrayNport_reg3 := (others=> (others=> '0'));
 	signal sender_ant: regNport := (others=> '0');
@@ -84,9 +83,6 @@ begin
 		end case;
 	end process;
 
-	tx <= header((METADEFLIT - 1) downto QUARTOFLIT);
-	ty <= header((QUARTOFLIT - 1) downto 0);
-	
 	RoutingMechanism : entity work.routingMechanism
 	generic map(
 		ramInit => ramInit)
@@ -94,7 +90,7 @@ begin
 			clock => clock,
 			reset => reset,
 			oe => ceTable,
-			dest => header(METADEFLIT-1 downto 0),
+			dest => header,
 			inputPort => sel,
 			outputPort => dir,
 			find => find
@@ -125,7 +121,7 @@ begin
 	--		 verifica o destino do pacote através de uma tabela e não por cálculos.
 	--		          4       3       2      1      0
 	-- dir -> 	| Local | South | North | West | East |
-	process(ES,ask,h,tx,ty,auxfree,dir,find)
+	process(ES,ask,h,auxfree,dir,find)
 	begin
 
 		case ES is
@@ -133,7 +129,7 @@ begin
 			when S1 => if ask='1' then PES <= S2; else PES <= S1; end if;
 			when S2 => PES <= S3;
 			when S3 => 
-					if address = header((METADEFLIT - 1) downto 0) and auxfree(LOCAL)='1' then PES<=S4;
+					if address = header and auxfree(LOCAL)='1' then PES<=S4;
 					elsif(find = validRegion)then
   				     if    (dir(EAST)='1' and  auxfree(EAST)='1') then
 						 indice_dir <= EAST ; 
@@ -186,7 +182,7 @@ begin
 					sel <= prox;
 				-- Aguarda resposta da Tabela					
 				when S3 =>
-					if address /= header((METADEFLIT - 1) downto 0) then
+					if address /= header then
 						ceTable <= '1';
 					end if;
 				-- Estabelece a conexão com a porta LOCAL

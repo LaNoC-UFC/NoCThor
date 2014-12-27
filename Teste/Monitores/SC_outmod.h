@@ -26,7 +26,7 @@ SC_MODULE(outputmodule)
 		unsigned long int x, y, addr;
 		x = index/NUM_ROT_X;
 		y = index%NUM_ROT_Y;
-		addr = (x << 4) + y;
+		addr = (x << (TAM_FLIT/2)) + y;
 		return addr;
 	}
 

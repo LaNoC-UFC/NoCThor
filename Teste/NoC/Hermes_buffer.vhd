@@ -33,7 +33,6 @@ use work.HermesPackage.all;
 
 -- interface da Hermes_buffer
 entity Hermes_buffer is
-	generic(address : regmetadeflit := (others=>'0'));
 port(
 	clock:      in  std_logic;
 	reset:      in  std_logic;

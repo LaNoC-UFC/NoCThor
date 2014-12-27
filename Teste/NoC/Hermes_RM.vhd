@@ -15,7 +15,7 @@ entity routingMechanism is
 			clock :   in  std_logic;
 			reset :   in  std_logic;
 			oe :   in  std_logic;
-			dest : in regmetadeflit;
+			dest : in regflit;
 			inputPort : in integer range 0 to (NPORT-1);
 			outputPort : out regNPort;
 			find : out RouterControl
@@ -45,8 +45,8 @@ architecture behavior of routingMechanism is
 begin
 
 	ctrl <= '0';
-	rowDst <= TO_INTEGER(unsigned(dest(QUARTOFLIT-1+NBITS downto QUARTOFLIT))) when ctrl = '0' else 0;
-	colDst <= TO_INTEGER(unsigned(dest(NBITS-1 downto 0))) when ctrl = '0' else 0;
+	rowDst <= TO_INTEGER(unsigned(dest(TAM_FLIT-1 downto METADEFLIT))) when ctrl = '0' else 0;
+	colDst <= TO_INTEGER(unsigned(dest(METADEFLIT-1 downto 0))) when ctrl = '0' else 0;
 
 	cond: for j in 0 to (NREG - 1) generate
 
