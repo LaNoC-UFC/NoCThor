@@ -1,6 +1,9 @@
 quit -sim
-vsim -voptargs="+noassertdebug+O5" work.topnoc
+#vsim -voptargs="+noassertdebug+O5" -onfinish exit work.topnoc
+vsim -voptargs="+noassertdebug+O5" -onfinish stop work.topnoc
 set StdArithNoWarnings 1
+file delete npack
+run -all
 #run 200 ms
 #quit -sim
 #quit -f

@@ -72,14 +72,18 @@ void inline inputmodule::TrafficGenerator()
 	Estado EstadoAtual[NUM_EP];
 	int FlitNumber[NUM_EP], NumberofFlits[NUM_EP], WaitTime[NUM_EP];
 	int Index,i,j,k;
+	unsigned long int ended = 0, sent = 0;
 
 	for(Index=0;Index<NUM_EP;Index++){
 		sprintf(temp,"In/in%0*X.txt",TAM_FLIT/4,address(NUM_EP -1 -Index));
 		Input[Index] = fopen(temp,"r");
+		if(Input[Index] == NULL) {
+			cout << "Couldnt open " << temp << endl;
+			ended++;
+		}
 
 		outTx(Index,0);
 		outData(Index,0);
-		//outCmd(Index,0);
 		EstadoAtual[Index] = S1;
 		FlitNumber[Index] = 0;
 	}
@@ -87,7 +91,7 @@ void inline inputmodule::TrafficGenerator()
 	while(true){
 		for(Index=0;Index<NUM_EP;Index++)
 		{
-			if(Input[Index] != NULL && !feof(Input[Index]) && reset!=SC_LOGIC_1)
+			if(Input[Index] != NULL /*&& !feof(Input[Index])*/ && reset!=SC_LOGIC_1)
 			{
 				if(EstadoAtual[Index] == S4 && FlitNumber[Index]>=NumberofFlits[Index]) //garante a consistência da carga oferecida (permite nenhum ciclo entre pacotes
 				{
@@ -98,16 +102,18 @@ void inline inputmodule::TrafficGenerator()
 				{
 						outTx(Index,0);
 						outData(Index,0);
-						//outCmd(Index,0);
 						FlitNumber[Index] = 0;
 						fscanf(Input[Index],"%X",&WaitTime[Index]);
 						EstadoAtual[Index] = S2;
 						if(feof(Input[Index]))
 						{
 							fclose(Input[Index]);
+							Input[Index] = NULL;
+							ended++;
+							sprintf(temp,"In/in%0*X.txt",TAM_FLIT/4,address(NUM_EP -1 -Index));
+							cout << "Endend " << temp << " => " << ended << endl;
 							outTx(Index,0);
 							outData(Index,0);
-							//outCmd(Index,0);
 							EstadoAtual[Index] = FimArquivo;
 						}
 				}			
@@ -157,14 +163,16 @@ void inline inputmodule::TrafficGenerator()
 					{
 						outTx(Index,0);
 						outData(Index,0);
-						//outCmd(Index,0);
 						EstadoAtual[Index] = S1;
 						free(Packet[Index]);
+						//if(FlitNumber[Index]==NumberofFlits[Index])
+						//	sent++;
 					}
 					else
 					{
 						if(FlitNumber[Index] == 0)
 						{
+							sent++;
 							sprintf(temp, "%0*X",TAM_FLIT, CurrentTime);
 							k = 9; //posição que deve ser inserido o timestamp de entrada na rede
 							for(i=0,j=0;i<TAM_FLIT;i++,j++)
@@ -179,23 +187,8 @@ void inline inputmodule::TrafficGenerator()
 							}
 						}
 
-						// if( (FlitNumber[Index] == 0) && ((rand()%10)<5) )//Aqui ele adiciona o bit de prioridade
-								// Packet[Index][FlitNumber[Index] ]+=pow(2,TAM_FLIT-TAM_FLIT/4);//4096; //valor para flit de 16 bits
-						// if(FlitNumber[Index] == 0) //Aqui ele adiciona o bit de prioridade
-						// {
-							// if((rand()%10)<3)
-								// Packet[Index][FlitNumber[Index] ]+=pow( 2 , TAM_FLIT/2 + 2 );							
-							// else
-								// Packet[Index][FlitNumber[Index] ]+=pow(2,TAM_FLIT/2);//256; //valor para flit de 16 bits
-						// }
-						
 						outTx( Index , 1 );
 						outData( Index , Packet[ Index ][ FlitNumber[ Index ] ] );
-						/*
-						if( FlitNumber[ Index ] == 0 ) outCmd( Index , 1 ); //cabeçalho
-						else if( FlitNumber[ Index ] == ( NumberofFlits[ Index ] - 1 ) ) outCmd( Index , 3 ); //terminador
-						else outCmd( Index , 2 ); //payload
-						*/
 						FlitNumber[ Index ]++;
 					}
 				}
@@ -204,11 +197,17 @@ void inline inputmodule::TrafficGenerator()
 				{
 					outTx(Index,0);
 					outData(Index,0);
-					//outCmd(Index,0);
 				}
 			}
 		}
 		wait();
+		if(ended >= NUM_EP) {
+			FILE* npack = fopen("npack","w");
+			fprintf(npack,"%ld",sent);
+			fclose(npack);
+			cout << sent << " packs sent." << endl;
+			ended = 0;
+		}
 	}
 }
 

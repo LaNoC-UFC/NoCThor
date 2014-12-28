@@ -70,6 +70,9 @@ void outputmodule::TrafficStalker()
 	unsigned long int TimeTarget[NUM_EP];
 	unsigned long int TimeSourceCore[NUM_EP];
 	unsigned long int TimeSourceNet[NUM_EP];
+	
+	unsigned long int arrived = 0, nPack = 0;
+	FILE* npack = NULL;
 
 	struct timeb tp;
 	int segundos_inicial, milisegundos_inicial;
@@ -208,11 +211,23 @@ void outputmodule::TrafficStalker()
 
 						fprintf(Output[Index]," %ld\n",TimeFinal);
 						EstadoAtual[Index] = 1;
+						
+						arrived++;
 					}
 				}
 			}
 		}
 		wait();
+		if(npack == NULL) {
+			npack = fopen("npack","r");
+			if(npack != NULL)
+			fscanf(npack,"%ld",&nPack);
+		} else if(arrived >= nPack) {
+			for(i=0; i<NUM_EP; i++)
+				fclose(Output[i]);				
+			sc_stop();
+		}
+
 	}
 }
 
