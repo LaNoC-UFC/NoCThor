@@ -30,7 +30,7 @@ architecture behavior of routingMechanism is
 	
 	-- sinais da Tabela
 	signal ce: std_logic := '0';
-	signal data : std_logic_vector(4 downto 0) := (others=>'0');
+	signal data : regNPort := (others=>'0');
 	signal ctrl : std_logic := '0';
 	signal rowDst, colDst : integer;
 	type row is array ((NREG-1) downto 0) of integer;

@@ -36,7 +36,7 @@ architecture RoutingTable of SwitchControl is
 	signal auxfree: regNport := (others=> '0');
 	signal source:  arrayNport_reg3 := (others=> (others=> '0'));
 	signal sender_ant: regNport := (others=> '0');
-	signal dir: std_logic_vector(NPORT-1 downto 0):= (others=> '0');
+	signal dir: regNport:= (others=> '0');
 
 -- sinais de controle da tabela
 	signal find: RouterControl;
