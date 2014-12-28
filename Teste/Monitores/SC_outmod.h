@@ -1,28 +1,14 @@
 #ifndef OUT_MOD
 #define OUT_MOD
 
-#define TAM_FLIT 16
-#define NUM_ROT_X 2
-#define NUM_ROT_Y 2
-#define NUM_ROT_Z 1
-#define NUM_EP NUM_ROT_X*NUM_ROT_Y
-#define NUM_ROT NUM_EP*NUM_ROT_Z
-
-#include "systemc.h"
-#include <stdio.h>
-#include <string.h>
-#include <sys/timeb.h>
+#include "SC_common.h"
 
 SC_MODULE(outputmodule)
 {
 	sc_in<sc_logic> clock;
 	sc_in<sc_logic> reset;
 	
-	//sc_in<sc_lv<TAM_FLIT/2> > address[NUM_ROT];
-	
-	//sc_out<sc_logic> outcredit[NUM_EP];
 	sc_in<sc_lv<TAM_FLIT> > indata[NUM_EP];
-	//sc_in<sc_lv<2> > incmd[NUM_EP];
 	sc_in<sc_logic> intx[NUM_EP];
 	
 	int inline inTx(int Indice)
@@ -40,22 +26,14 @@ SC_MODULE(outputmodule)
 		unsigned long int x, y, addr;
 		x = index/NUM_ROT_X;
 		y = index%NUM_ROT_Y;
-		addr = (x << 4) + y;
+		addr = (x << (TAM_FLIT/2)) + y;
 		return addr;
 	}
-
-	/*
-	int inline inCmd(int Indice)
-	{
-		return incmd[Indice].read().to_int();
-	}
-	*/
 
 	unsigned long int CurrentTime;
 
 	void TrafficStalker();
 	void Timer();
-	//void port_assign();
 
 	SC_CTOR(outputmodule) :
 	reset("reset"),
@@ -70,11 +48,6 @@ SC_MODULE(outputmodule)
 		sensitive_pos << clock;
 		dont_initialize();
 
-		/*
-		SC_METHOD(port_assign);
-		sensitive << clock;
-		dont_initialize();
-		*/
 	}
 };
 
@@ -82,16 +55,6 @@ void outputmodule::Timer()
 {
 	++CurrentTime;
 }
-
-/*
-void outputmodule::port_assign()
-{
-	for(int i=0;i<NUM_EP;i++)
-	{
-		outcredit[i] = SC_LOGIC_1;
-	}
-}	
-*/
 
 void outputmodule::TrafficStalker()
 {
