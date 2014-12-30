@@ -76,19 +76,6 @@ void outputmodule::TrafficStalker()
 	unsigned long int arrived = 0, nPack = 0;
 	FILE* npack = NULL;
 
-	struct timeb tp;
-	int segundos_inicial, milisegundos_inicial;
-	int segundos_final, milisegundos_final;
-	unsigned long int TimeFinal;
-
-//-----------------TIME--------------------------------//
-	//captura o tempo
-	//ftime(&tp);
-	//armazena o tempo inicial
-	segundos_inicial=tp.time;
-	milisegundos_inicial=tp.millitm;
-//-----------------------------------------------------//
-
 	for(i=0; i<NUM_EP; i++)
 	{
 		sprintf(temp,"Out/out%0*X.txt",TAM_FLIT/4,address(NUM_EP -1 - i));
@@ -206,18 +193,6 @@ void outputmodule::TrafficStalker()
 						//latência desde o tempo de criação do pacote (em decimal)
 						fprintf(Output[Index]," %d",(TimeTarget[Index]-TimeSourceCore[Index]));
 
-					//-----------------TIME--------------------------------//
-						//captura o tempo de simulacao em milisegundos
-						//ftime(&tp);
-
-						//armazena o tempo final
-						segundos_final=tp.time;
-						milisegundos_final=tp.millitm;
-
-						TimeFinal=(segundos_final*1000 + milisegundos_final) - (segundos_inicial*1000+milisegundos_inicial);
-					//-----------------------------------------------------//
-
-						fprintf(Output[Index]," %ld\n",TimeFinal);
 						EstadoAtual[Index] = 0;
 						
 						arrived++;
@@ -243,7 +218,7 @@ void outputmodule::TrafficStalker()
 			//cout << "Arrived = " << arrived << endl;
 		} else if(arrived >= nPack) {
 			for(i=0; i<NUM_EP; i++)
-				fclose(Output[i]);				
+				fclose(Output[i]);
 			sc_stop();
 		}
 
