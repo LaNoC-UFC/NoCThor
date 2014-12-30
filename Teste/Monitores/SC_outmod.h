@@ -76,13 +76,11 @@ void outputmodule::TrafficStalker()
 	unsigned long int arrived = 0, nPack = 0;
 	FILE* npack = NULL;
 
-	for(i=0; i<NUM_EP; i++)
-	{
-		sprintf(temp,"Out/out%0*X.txt",TAM_FLIT/4,address(NUM_EP -1 - i));
-		Output[i] = fopen(temp,"w");
-		Packet[i]=(unsigned long int*) calloc( sizeof(unsigned long int) , 9); // 9 eh o tamanho do pacote ateh o numero de sequencia
-		Size[i] = 0;
-		EstadoAtual[i] = 0;
+	for(Index=0; Index<NUM_EP; Index++) {
+		Output[Index] = NULL;
+		Packet[Index]=(unsigned long int*) calloc( sizeof(unsigned long int) , 9); // 9 eh o tamanho do pacote ateh o numero de sequencia
+		Size[Index] = 0;
+		EstadoAtual[Index] = 0;
 	}
 
 	while(true)
@@ -134,9 +132,14 @@ void outputmodule::TrafficStalker()
 					if(EstadoAtual[Index] == 8) {
 						
 						nullPack[Index] = (Packet[Index][7] == 0 && Packet[Index][8] == 0);
-						if(!nullPack[Index])
+						if(!nullPack[Index]) {
+							if(Output[Index] == NULL) {
+								sprintf(temp,"Out/out%0*X.txt",TAM_FLIT/4,address(NUM_EP-1-Index));
+								Output[Index] = fopen(temp,"w");
+							}
 							for(i=0; i<=8; i++)
-								fprintf(Output[Index]," %0*X",(int)TAM_FLIT/4,Packet[Index][i]);
+								fprintf(Output[Index],"%0*X ",(int)TAM_FLIT/4,Packet[Index][i]);
+						}
 						else
 							EstadoAtual[Index] = 13; // vai ser incrementado
 					}
@@ -148,7 +151,7 @@ void outputmodule::TrafficStalker()
 				else if(EstadoAtual[Index]>=9 && EstadoAtual[Index]<=12)//captura o timestamp do entrada na rede
 				{
 					CurrentFlit[Index] = (unsigned long int)inData(Index);
-					fprintf(Output[Index]," %0*X",(int)TAM_FLIT/4,CurrentFlit[Index]);
+					fprintf(Output[Index],"%0*X ",(int)TAM_FLIT/4,CurrentFlit[Index]);
 
 					if(EstadoAtual[Index]==9) TimeSourceNet[Index]=0;
 
@@ -161,7 +164,7 @@ void outputmodule::TrafficStalker()
 				else if(EstadoAtual[Index]==13)//captura o payload
 				{
 					CurrentFlit[Index] = (unsigned long int)inData(Index);
-					fprintf(Output[Index]," %0*X",(int)TAM_FLIT/4,CurrentFlit[Index]);
+					fprintf(Output[Index],"%0*X ",(int)TAM_FLIT/4,CurrentFlit[Index]);
 
 					Size[Index]--;
 
@@ -176,22 +179,22 @@ void outputmodule::TrafficStalker()
 							if(j==TAM_FLIT/4-1)
 							{
 								temp[TAM_FLIT/4]='\0';
-								fprintf(Output[Index]," %s",temp);
+								fprintf(Output[Index],"%s ",temp);
 								j=-1; //  porque na iteracao seguinte j será 0.
 							}
 						}
 
 						//Tempo em que o nodo origem deveria inserir o pacote na rede (em decimal)
-						fprintf(Output[Index]," %d",TimeSourceCore[Index]);
+						fprintf(Output[Index],"%d ",TimeSourceCore[Index]);
 
 						//Tempo em que o pacote entrou na rede (em decimal)
-						fprintf(Output[Index]," %d",TimeSourceNet[Index]);
+						fprintf(Output[Index],"%d ",TimeSourceNet[Index]);
 
 						//Tempo de chegada do pacote no destino (em decimal)
-						fprintf(Output[Index]," %d",TimeTarget[Index]);
+						fprintf(Output[Index],"%d ",TimeTarget[Index]);
 
 						//latência desde o tempo de criação do pacote (em decimal)
-						fprintf(Output[Index]," %d",(TimeTarget[Index]-TimeSourceCore[Index]));
+						fprintf(Output[Index],"%d",(TimeTarget[Index]-TimeSourceCore[Index]));
 
 						EstadoAtual[Index] = 0;
 						
@@ -213,12 +216,11 @@ void outputmodule::TrafficStalker()
 		wait();
 		if(npack == NULL) {
 			npack = fopen("npack","r");
-			if(npack != NULL)
-				fscanf(npack,"%ld",&nPack);
+			if(npack != NULL) fscanf(npack,"%ld",&nPack);
 			//cout << "Arrived = " << arrived << endl;
 		} else if(arrived >= nPack) {
 			for(i=0; i<NUM_EP; i++)
-				fclose(Output[i]);
+				if(Output[i] != NULL) fclose(Output[i]);
 			sc_stop();
 		}
 
