@@ -93,11 +93,11 @@ void inline inputmodule::TrafficGenerator()
 		{
 			if(Input[Index] != NULL /*&& !feof(Input[Index])*/ && reset!=SC_LOGIC_1)
 			{
-				if(EstadoAtual[Index] == S4 && FlitNumber[Index]>=NumberofFlits[Index]) //garante a consistência da carga oferecida (permite nenhum ciclo entre pacotes
+				/*if(EstadoAtual[Index] == S4 && FlitNumber[Index]>=NumberofFlits[Index]) //garante a consistência da carga oferecida (permite nenhum ciclo entre pacotes
 				{
 					EstadoAtual[Index] = S1;
 					free(Packet[Index]);
-				}
+				}*/
 				if(EstadoAtual[Index] == S1) //captura o tempo para entrada na rede
 				{
 						outTx(Index,0);
@@ -200,7 +200,6 @@ void inline inputmodule::TrafficGenerator()
 				}
 			}
 		}
-		wait();
 		if(ended >= NUM_EP) {
 			FILE* npack = fopen("npack","w");
 			fprintf(npack,"%ld",sent);
@@ -208,6 +207,7 @@ void inline inputmodule::TrafficGenerator()
 			cout << sent << " packs sent." << endl;
 			ended = 0;
 		}
+		wait();
 	}
 }
 
