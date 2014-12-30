@@ -70,6 +70,8 @@ void outputmodule::TrafficStalker()
 	unsigned long int TimeTarget[NUM_EP];
 	unsigned long int TimeSourceCore[NUM_EP];
 	unsigned long int TimeSourceNet[NUM_EP];
+	unsigned long int* Packet[NUM_EP];
+	char nullPack[NUM_EP];
 	
 	unsigned long int arrived = 0, nPack = 0;
 	FILE* npack = NULL;
@@ -91,8 +93,9 @@ void outputmodule::TrafficStalker()
 	{
 		sprintf(temp,"Out/out%0*X.txt",TAM_FLIT/4,address(NUM_EP -1 - i));
 		Output[i] = fopen(temp,"w");
+		Packet[i]=(unsigned long int*) calloc( sizeof(unsigned long int) , 9); // 9 eh o tamanho do pacote ateh o numero de sequencia
 		Size[i] = 0;
-		EstadoAtual[i] = 1;
+		EstadoAtual[i] = 0;
 	}
 
 	while(true)
@@ -102,68 +105,73 @@ void outputmodule::TrafficStalker()
 
 			if(inTx(Index)==1)
 			{
-				if(EstadoAtual[Index] == 1)//captura o header do pacote
+				if(EstadoAtual[Index] == 0)//captura o header do pacote
 				{
-					CurrentFlit[Index] = (unsigned long int)inData(Index);
-					fprintf(Output[Index],"%0*X",(int)TAM_FLIT/4,CurrentFlit[Index]);
-
+					Packet[Index][EstadoAtual[Index]] = (unsigned long int)inData(Index);
+					
 					EstadoAtual[Index]++;
 				}
 				
-				else if(EstadoAtual[Index] == 2)//captura o tamanho do payload
+				else if(EstadoAtual[Index] == 1)//captura o tamanho do payload
 				{
-					CurrentFlit[Index] = (unsigned long int)inData(Index);
-					fprintf(Output[Index]," %0*X",(int)TAM_FLIT/4,CurrentFlit[Index]);
+					Packet[Index][EstadoAtual[Index]] = (unsigned long int)inData(Index);
 
-					Size[Index] = CurrentFlit[Index];
+					Size[Index] = Packet[Index][EstadoAtual[Index]];
 					EstadoAtual[Index]++;
 				}
 				
-				else if(EstadoAtual[Index] == 3)//captura o nodo origem
+				else if(EstadoAtual[Index] == 2)//captura o nodo origem
 				{
-					CurrentFlit[Index] = (unsigned long int)inData(Index);
-					fprintf(Output[Index]," %0*X",(int)TAM_FLIT/4,CurrentFlit[Index]);
+					Packet[Index][EstadoAtual[Index]] = (unsigned long int)inData(Index);
 
 					Size[Index]--;
 					EstadoAtual[Index]++;
 				}
 				
-				else if(EstadoAtual[Index]>=4 && EstadoAtual[Index]<=7)//captura o timestamp do nodo origem
+				else if(EstadoAtual[Index]>=3 && EstadoAtual[Index]<=6)//captura o timestamp do nodo origem
 				{
-					CurrentFlit[Index] = (unsigned long int)inData(Index);
-					fprintf(Output[Index]," %0*X",(int)TAM_FLIT/4,CurrentFlit[Index]);
+					Packet[Index][EstadoAtual[Index]] = (unsigned long int)inData(Index);
 
-					if(EstadoAtual[Index]==4) TimeSourceCore[Index]=0;
+					if(EstadoAtual[Index]==3) TimeSourceCore[Index]=0;
 
-					TimeSourceCore[Index] += (unsigned long int)(CurrentFlit[Index] * pow(2,((7 - EstadoAtual[Index])*TAM_FLIT)));
+					TimeSourceCore[Index] += (unsigned long int)(Packet[Index][EstadoAtual[Index]] * pow(2,((6 - EstadoAtual[Index])*TAM_FLIT)));
 
 					Size[Index]--;
 					EstadoAtual[Index]++;
 				}
 				
-				else if(EstadoAtual[Index] == 8 || EstadoAtual[Index] == 9)//captura o número de sequencia do pacote
+				else if(EstadoAtual[Index] == 7 || EstadoAtual[Index] == 8)//captura o número de sequencia do pacote
+				{
+					Packet[Index][EstadoAtual[Index]] = (unsigned long int)inData(Index);
+
+					if(EstadoAtual[Index] == 8) {
+						
+						nullPack[Index] = (Packet[Index][7] == 0 && Packet[Index][8] == 0);
+						if(!nullPack[Index])
+							for(i=0; i<=8; i++)
+								fprintf(Output[Index]," %0*X",(int)TAM_FLIT/4,Packet[Index][i]);
+						else
+							EstadoAtual[Index] = 13; // vai ser incrementado
+					}
+					
+					Size[Index]--;
+					EstadoAtual[Index]++;
+				}
+				
+				else if(EstadoAtual[Index]>=9 && EstadoAtual[Index]<=12)//captura o timestamp do entrada na rede
 				{
 					CurrentFlit[Index] = (unsigned long int)inData(Index);
 					fprintf(Output[Index]," %0*X",(int)TAM_FLIT/4,CurrentFlit[Index]);
+
+					if(EstadoAtual[Index]==9) TimeSourceNet[Index]=0;
+
+					TimeSourceNet[Index] += (unsigned long int)(CurrentFlit[Index] * pow(2,((12 - EstadoAtual[Index])*TAM_FLIT)));
 
 					Size[Index]--;
 					EstadoAtual[Index]++;
 				}
 				
-				else if(EstadoAtual[Index]>=10 && EstadoAtual[Index]<=13)//captura o timestamp do entrada na rede
-				{
-					CurrentFlit[Index] = (unsigned long int)inData(Index);
-					fprintf(Output[Index]," %0*X",(int)TAM_FLIT/4,CurrentFlit[Index]);
-
-					if(EstadoAtual[Index]==10) TimeSourceNet[Index]=0;
-
-					TimeSourceNet[Index] += (unsigned long int)(CurrentFlit[Index] * pow(2,((13 - EstadoAtual[Index])*TAM_FLIT)));
-
-					Size[Index]--;
-					EstadoAtual[Index]++;
-				}
-				
-				else if(EstadoAtual[Index]==14)//captura o payload
+				else if(EstadoAtual[Index]==13)//captura o payload
 				{
 					CurrentFlit[Index] = (unsigned long int)inData(Index);
 					fprintf(Output[Index]," %0*X",(int)TAM_FLIT/4,CurrentFlit[Index]);
@@ -210,8 +218,18 @@ void outputmodule::TrafficStalker()
 					//-----------------------------------------------------//
 
 						fprintf(Output[Index]," %ld\n",TimeFinal);
-						EstadoAtual[Index] = 1;
+						EstadoAtual[Index] = 0;
 						
+						arrived++;
+					}
+				}
+				else if(EstadoAtual[Index]==14) //descarta flits
+				{
+					//CurrentFlit[Index] = (unsigned long int)inData(Index);
+
+					Size[Index]--;
+					if(Size[Index]==0) {//fim do pacote
+						EstadoAtual[Index] = 0;
 						arrived++;
 					}
 				}
