@@ -97,7 +97,7 @@ void outputmodule::TrafficStalker()
 
 	while(true)
 	{
-		for(Index = 0; Index<NUM_EP;Index++)
+		for(Index = 0; Index<NUM_EP; Index++)
 		{
 
 			if(inTx(Index)==1)
@@ -221,7 +221,8 @@ void outputmodule::TrafficStalker()
 		if(npack == NULL) {
 			npack = fopen("npack","r");
 			if(npack != NULL)
-			fscanf(npack,"%ld",&nPack);
+				fscanf(npack,"%ld",&nPack);
+			//cout << "Arrived = " << arrived << endl;
 		} else if(arrived >= nPack) {
 			for(i=0; i<NUM_EP; i++)
 				fclose(Output[i]);				
