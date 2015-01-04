@@ -194,7 +194,7 @@ void outputmodule::TrafficStalker()
 						fprintf(Output[Index],"%d ",TimeTarget[Index]);
 
 						//latência desde o tempo de criação do pacote (em decimal)
-						fprintf(Output[Index],"%d",(TimeTarget[Index]-TimeSourceCore[Index]));
+						fprintf(Output[Index],"%d\n",(TimeTarget[Index]-TimeSourceCore[Index]));
 
 						EstadoAtual[Index] = 0;
 						

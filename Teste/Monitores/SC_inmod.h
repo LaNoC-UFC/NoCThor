@@ -70,7 +70,7 @@ void inline inputmodule::TrafficGenerator()
 	unsigned long int Target[NUM_EP],Size[NUM_EP];
 	unsigned long int* Packet[NUM_EP];
 	Estado EstadoAtual[NUM_EP];
-	int FlitNumber[NUM_EP], NumberofFlits[NUM_EP], WaitTime[NUM_EP];
+	unsigned long int FlitNumber[NUM_EP], NumberofFlits[NUM_EP], WaitTime[NUM_EP];
 	int Index,i,j,k;
 	unsigned long int ended = 0, sent = 0;
 
@@ -81,6 +81,8 @@ void inline inputmodule::TrafficGenerator()
 			cout << "Couldnt open " << temp << endl;
 			ended++;
 		}
+		else
+			Packet[Index]=(unsigned long int*)calloc( sizeof(unsigned long int) , 13);
 
 		outTx(Index,0);
 		outData(Index,0);
@@ -91,7 +93,7 @@ void inline inputmodule::TrafficGenerator()
 	while(true){
 		for(Index=0;Index<NUM_EP;Index++)
 		{
-			if(Input[Index] != NULL /*&& !feof(Input[Index])*/ && reset!=SC_LOGIC_1)
+			if(Input[Index] != NULL && reset!=SC_LOGIC_1)
 			{
 				/*if(EstadoAtual[Index] == S4 && FlitNumber[Index]>=NumberofFlits[Index]) //garante a consistência da carga oferecida (permite nenhum ciclo entre pacotes
 				{
@@ -108,6 +110,7 @@ void inline inputmodule::TrafficGenerator()
 						if(feof(Input[Index]))
 						{
 							fclose(Input[Index]);
+							free(Packet[Index]);
 							Input[Index] = NULL;
 							ended++;
 							sprintf(temp,"In/in%0*X.txt",TAM_FLIT/4,address(NUM_EP -1 -Index));
@@ -134,7 +137,6 @@ void inline inputmodule::TrafficGenerator()
 					fscanf(Input[Index],"%X",&Size[Index]);
 					Size[Index] += 4; //4 = Inserção do timestamp de entrada na rede
 					NumberofFlits[Index] = Size[Index] + 2; //2 = header + size
-					Packet[Index]=(unsigned long int*)calloc( sizeof(unsigned long int) , NumberofFlits[Index]);
 					Packet[Index][0] = Target[Index];
 					Packet[Index][1] = Size[Index];
 					FlitNumber[Index]++;
@@ -147,12 +149,6 @@ void inline inputmodule::TrafficGenerator()
 
 					FlitNumber[Index]+=4; //eh o espaco que depois vai ter o TS de entrada na rede =)
 
-					//Captura o payload
-					while(FlitNumber[Index] < NumberofFlits[Index])
-					{
-						fscanf(Input[Index], "%X", &Packet[Index][FlitNumber[Index] ]);
-						FlitNumber[Index]++;
-					}
 					EstadoAtual[Index] = S4;
 					FlitNumber[Index] = 0;
 				}
@@ -164,9 +160,6 @@ void inline inputmodule::TrafficGenerator()
 						outTx(Index,0);
 						outData(Index,0);
 						EstadoAtual[Index] = S1;
-						free(Packet[Index]);
-						//if(FlitNumber[Index]==NumberofFlits[Index])
-						//	sent++;
 					}
 					else
 					{
@@ -188,7 +181,10 @@ void inline inputmodule::TrafficGenerator()
 						}
 
 						outTx( Index , 1 );
-						outData( Index , Packet[ Index ][ FlitNumber[ Index ] ] );
+						if(FlitNumber[ Index ] < 13)
+							outData( Index , Packet[ Index ][ FlitNumber[ Index ] ] );
+						else
+							outData(Index, FlitNumber[ Index ]-5);
 						FlitNumber[ Index ]++;
 					}
 				}
