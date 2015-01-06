@@ -63,8 +63,9 @@ void outputmodule::TrafficStalker() {
 	char temp[100];
 
 	unsigned long int TimeTarget[NUM_EP];
+	//unsigned long int TimeFirstIn[NUM_EP];
 	unsigned long int TimeSourceCore[NUM_EP];
-	unsigned long int TimeSourceNet[NUM_EP];
+	//unsigned long int TimeSourceNet[NUM_EP];
 	unsigned long int* Packet[NUM_EP];
 	char nullPack[NUM_EP];
 	
@@ -88,6 +89,7 @@ void outputmodule::TrafficStalker() {
 				if(EstadoAtual[Index] == 0)//captura o header do pacote
 				{
 					Packet[Index][EstadoAtual[Index]] = (unsigned long int)inData(Index);
+					//TimeFirstIn[Index]= CurrentTime;
 					
 					EstadoAtual[Index]++;
 				}
@@ -147,9 +149,8 @@ void outputmodule::TrafficStalker() {
 				{
 					CurrentFlit[Index] = (unsigned long int)inData(Index);
 
-					if(EstadoAtual[Index]==9) TimeSourceNet[Index]=0;
-
-					TimeSourceNet[Index] += (unsigned long int)(CurrentFlit[Index] * pow(2,((12 - EstadoAtual[Index])*TAM_FLIT)));
+					//if(EstadoAtual[Index]==9) TimeSourceNet[Index]=0;
+					//TimeSourceNet[Index] += (unsigned long int)(CurrentFlit[Index] * pow(2,((12 - EstadoAtual[Index])*TAM_FLIT)));
 
 					Size[Index]--;
 					EstadoAtual[Index]++;
@@ -162,19 +163,20 @@ void outputmodule::TrafficStalker() {
 
 					if(Size[Index]==0)//fim do pacote
 					{
-						//Tempo de chegada no destino
+						//Tempo de chegada do ultimo flit no destino
 						TimeTarget[Index]= CurrentTime;
 						
 						//Tempo em que o nodo origem deveria inserir o pacote na rede (em decimal)
-						fprintf(Output[Index],"%d ",TimeSourceCore[Index]);
-
+						//fprintf(Output[Index],"%d ",TimeSourceCore[Index]);
 						//Tempo em que o pacote entrou na rede (em decimal)
-						fprintf(Output[Index],"%d ",TimeSourceNet[Index]);
+						//fprintf(Output[Index],"%d ",TimeSourceNet[Index]);
+						//Tempo de chegada do pacote no destino (em decimal)
+						//fprintf(Output[Index],"%d ",TimeFirstIn[Index]); //tpfext
 
 						//Tempo de chegada do pacote no destino (em decimal)
-						fprintf(Output[Index],"%d ",TimeTarget[Index]);
+						fprintf(Output[Index],"%d ",TimeTarget[Index]); //tplext
 
-						//latência desde o tempo de criação do pacote (em decimal)
+						//latencia desde o tempo de criação do pacote (em decimal)
 						fprintf(Output[Index],"%d\n",(TimeTarget[Index]-TimeSourceCore[Index]));
 
 						EstadoAtual[Index] = 0;
