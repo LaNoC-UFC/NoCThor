@@ -1,7 +1,8 @@
 REM use: lote.bat test_name
 @echo off
 set comp=do comp.do; exit -f
-set simul=do sim.do; run 10ms; exit -sim; exit -f
+set simul=do sim.do 
+REM ; exit -sim; exit -f
 set test=%1
 set output=.\Out\%test%
 set input=..\%test%
@@ -21,3 +22,4 @@ exit /b
 	mkdir %output%\%1
 	move .\Out\out* %output%\%1
 exit /b
+
