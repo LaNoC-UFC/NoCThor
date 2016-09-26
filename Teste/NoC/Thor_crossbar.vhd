@@ -14,9 +14,9 @@
 library IEEE;
 use IEEE.std_logic_1164.all;
 use IEEE.std_logic_unsigned.all;
-use work.HermesPackage.all;
+use work.ThorPackage.all;
 
-entity Hermes_crossbar is
+entity Thor_crossbar is
 port(
 	data_av:     in  regNport;
 	data_in:     in  arrayNport_regflit;
@@ -28,9 +28,9 @@ port(
 	tx:          out regNport;
 	data_out:    out arrayNport_regflit;
 	credit_i:    in  regNport);
-end Hermes_crossbar;
+end Thor_crossbar;
 
-architecture Hermes_crossbar of Hermes_crossbar is
+architecture Thor_crossbar of Thor_crossbar is
 
 begin
 
@@ -40,4 +40,4 @@ begin
 		data_ack(i) <= credit_i( CONV_INTEGER( tab_in(i) ) ) when data_av(i) = '1' else '0';
 	end generate MUXS;		
 
-end Hermes_crossbar;
+end Thor_crossbar;

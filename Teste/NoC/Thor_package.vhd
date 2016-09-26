@@ -6,7 +6,7 @@ use IEEE.Std_Logic_1164.all;
 use IEEE.std_logic_unsigned.all;
 use IEEE.std_logic_arith.all;
 
-package HermesPackage is
+package ThorPackage is
 
 ---------------------------------------------------------
 -- CONSTANTS INDEPENDENTES
@@ -80,9 +80,9 @@ package HermesPackage is
 	constant TAM_LINHA : integer := 200;
 	function GET_ADDR(index : integer) return regflit;
 
-end HermesPackage;
+end ThorPackage;
 
-package body HermesPackage is
+package body ThorPackage is
 
 	--
 	-- dado o index do roteador retorna o endereço correspondente
@@ -116,4 +116,4 @@ package body HermesPackage is
 		return bin;
 	end CONV_VECTOR;
 
-end HermesPackage;
+end ThorPackage;

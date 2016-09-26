@@ -1,9 +1,9 @@
 library IEEE;
 use IEEE.std_logic_1164.all;
 use IEEE.std_logic_unsigned.all;
-use work.HermesPackage.all;
+use work.ThorPackage.all;
 
-entity Hermes_buffer is
+entity Thor_buffer is
 port(
 	clock:      in  std_logic;
 	reset:      in  std_logic;
@@ -17,9 +17,9 @@ port(
 	data:       out regflit;
 	data_ack:   in  std_logic;
 	sender:     out std_logic);
-end Hermes_buffer;
+end Thor_buffer;
 
-architecture Hermes_buffer of Hermes_buffer is
+architecture Thor_buffer of Thor_buffer is
 
 type fila_out is (S_INIT, S_PAYLOAD, S_SENDHEADER, S_HEADER, S_END, S_END2);
 signal EA : fila_out;
@@ -178,4 +178,4 @@ begin
 		end if;
 	end process;
 	
-end Hermes_buffer;
+end Thor_buffer;
