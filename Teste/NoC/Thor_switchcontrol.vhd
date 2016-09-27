@@ -1,7 +1,7 @@
 library IEEE;
 use IEEE.STD_LOGIC_1164.all;
 use IEEE.STD_LOGIC_unsigned.all;
-use work.HermesPackage.all;
+use work.ThorPackage.all;
 use work.TablePackage.all;
 
 entity SwitchControl is

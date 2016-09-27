@@ -41,7 +41,7 @@
 library IEEE;
 use IEEE.std_logic_1164.all;
 use IEEE.std_logic_unsigned.all;
-use work.HermesPackage.all;
+use work.ThorPackage.all;
 use work.TablePackage.all;
 
 entity RouterCC is
@@ -71,7 +71,7 @@ signal free: regNport := (others=>'0');
 begin
 
 	buff : for i in EAST to LOCAL generate
-		B : entity work.Hermes_buffer
+		B : entity work.Thor_buffer
 		port map(
 			clock => clock,
 			reset => reset,
@@ -104,7 +104,7 @@ begin
 		mux_in => mux_in,
 		mux_out => mux_out);
 
-	CrossBar : Entity work.Hermes_crossbar
+	CrossBar : Entity work.Thor_crossbar
 	port map(
 		data_av => data_av,
 		data_in => data,
