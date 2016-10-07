@@ -1,10 +1,10 @@
 Teste/Out/*.txt
 Teste/In/*.txt
 Teste/work/
-Teste/transcript
 Teste/wave.do
 Teste/vsim.wlf
 Teste/npack
+*transcript
 *~
 *.ini
 *.jar
