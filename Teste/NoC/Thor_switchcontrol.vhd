@@ -22,7 +22,7 @@ end SwitchControl;
 
 architecture RoutingTable of SwitchControl is
 
-	type state is (S0,S1,S2,S3,S4,S5,S7);
+	type state is (S0,S1,S2,S3,S4,S5,S6);
 	signal ES, PES: state;
 
 -- sinais do arbitro
@@ -41,6 +41,9 @@ architecture RoutingTable of SwitchControl is
 -- sinais de controle da tabela
 	signal find: RouterControl;
 	signal ceTable: std_logic := '0';
+	
+	signal selectedOutput : integer := 0;
+	signal isOutputSelected : std_logic;
 	
 begin
 	ask <= '1' when (h(LOCAL)='1' or h(EAST)='1' or h(WEST)='1' or h(NORTH)='1' or h(SOUTH)='1') else '0';
@@ -86,14 +89,23 @@ begin
 	RoutingMechanism : entity work.routingMechanism
 	generic map(ramInit => ramInit)
 	port map(
-			clock => clock,
-			reset => reset,
-			oe => ceTable,
-			dest => header,
-			inputPort => sel,
-			outputPort => dir,
-			find => find
+	   clock => clock,
+	   reset => reset,
+	   oe => ceTable,
+	   dest => header,
+	   inputPort => sel,
+	   outputPort => dir,
+	   find => find
 	);
+	
+	OutputArbiter : entity work.outputArbiter
+    port map(
+        freePort                => auxfree,
+        enable                  => '1',
+        enablePort              => dir,
+        isOutputSelected        => isOutputSelected,
+        selectedOutput          => selectedOutput
+    );
 
 	process(reset,clock)
 	begin
@@ -101,59 +113,36 @@ begin
 			ES<=S0;
 		elsif clock'event and clock='0' then
 			ES<=PES;
-		end if; 
+		end if;
 	end process;
 
-	------------------------------------------------------------------------------------------------------
-	-- PARTE COMBINACIONAL PARA DEFINIR O PRÓXIMO ESTADO DA MÁQUINA.
-	--
-	-- SO -> O estado S0 é o estado de inicialização da máquina. Este estado somente é	
-	--       atingido quando o sinal reset é ativado.
-	-- S1 -> O estado S1 é o estado de espera por requisição de chaveamento. Quando o
-	--       árbitro recebe uma ou mais requisições o sinal ask é ativado fazendo a
-	--       máquina avançar para o estado S2.
-	-- S2 -> No estado S2 a porta de entrada que solicitou chaveamento é selecionada. Se
-	--       houver mais de uma, aquela com maior prioridade é a selecionada. Se o destino
-	--			for o próprio roteador pula para o estado S4, caso contrário segue o fluxo
-	--			normal.
-	-- S3 -> Este estado é muito parecido com o do algoritmo XY, a diferença é que ele
-	--		 verifica o destino do pacote através de uma tabela e não por cálculos.
-	--		          4       3       2      1      0
-	-- dir -> 	| Local | South | North | West | East |
-	process(ES,ask,h,auxfree,dir,find)
+	process(ES, ask, auxfree, find, selectedOutput, isOutputSelected)
 	begin
 
-		case ES is
-			when S0 => PES <= S1;
-			when S1 => if ask='1' then PES <= S2; else PES <= S1; end if;
-			when S2 => PES <= S3;
-			when S3 => 
-					if address = header and auxfree(LOCAL)='1' then PES<=S4;
-					elsif(find = validRegion)then
-  				     if    (dir(EAST)='1' and  auxfree(EAST)='1') then
-						 indice_dir <= EAST ; 
-					    PES<=S5;
-					  elsif (dir(WEST)='1' and  auxfree(WEST)='1') then
-						 indice_dir <= WEST; 
-					    PES<=S5;
-	  				  elsif (dir(NORTH)='1' and  auxfree(NORTH)='1' ) then
-						 indice_dir <= NORTH; 
-					    PES<=S5;
-					  elsif (dir(SOUTH)='1' and  auxfree(SOUTH)='1' ) then
-						 indice_dir <= SOUTH; 
-					    PES<=S5;
-			  		  else PES<=S1; end if;
-					elsif(find = portError)then
-						PES <= S1;
-					else
-					  PES<=S3;
-					end if;
-			when S4 => PES<=S7;
-			when S5 => PES<=S7;
-			when S7 => PES<=S1;
-		end case;
-	end process;
-
+        case ES is
+            when S0 => PES <= S1;
+            when S1 => if ask='1' then PES <= S2; else PES <= S1; end if;
+            when S2 => PES <= S3;
+            when S3 =>
+                if address = header and auxfree(LOCAL) = '1' then
+                    PES<=S4;
+                elsif(find = validRegion) then
+                    if (isOutputSelected = '1') then
+                        indice_dir <= selectedOutput;
+                        PES <= S5;
+                    else
+                        PES <= S1;
+                    end if;
+                elsif(find = portError) then
+                    PES <= S1;
+                else
+                    PES<=S3;
+                end if;
+            when S4 => PES<=S6;
+            when S5 => PES<=S6;
+            when S6 => PES<=S1;
+        end case;
+    end process;
 
 	------------------------------------------------------------------------------------------------------
 	-- executa as ações correspondente ao estado atual da máquina de estados
