@@ -46,7 +46,7 @@ architecture RoutingTable of SwitchControl is
     signal isOutputSelected : std_logic;
     
 begin
-    ask <= '1' when (h(LOCAL)='1' or h(EAST)='1' or h(WEST)='1' or h(NORTH)='1' or h(SOUTH)='1') else '0';
+    ask <= '1' when OR_REDUCTION(h) else '0';
     incoming <= CONV_VECTOR(sel);
     header <= data(CONV_INTEGER(incoming));
 
