@@ -48,9 +48,8 @@ begin
 
     InputArbiter : entity work.inputArbiter
     port map(
-        lastPort => sel,
         requests => h,
-        enable => ask,
+        enable => enable,
         nextPort => prox,
         ready => ready
     );
@@ -131,10 +130,12 @@ begin
                     mux_out <= (others=>(others=>'0'));
                     source <= (others=>(others=>'0'));
                 when S1=>
+                    enable <= ask;
                     ceTable <= '0';
                     ack_h <= (others => '0');
                 when S2=>
                     sel <= prox;
+                    enable <= not ready;
                 when S3 =>
                     if address /= header then
                         ceTable <= '1';
