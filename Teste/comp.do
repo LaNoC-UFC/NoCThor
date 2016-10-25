@@ -8,6 +8,7 @@ vcom -93 -explicit -nocheck -quiet NoC/Table_package.vhd
 
 # NoC
 vcom -93 -explicit -nocheck -quiet NoC/Thor_RM.vhd
+vcom -93 -explicit -nocheck -quiet NoC/fifo_buffer.vhd
 vcom -93 -explicit -nocheck -quiet NoC/Thor_buffer.vhd
 vcom -93 -explicit -nocheck -quiet NoC/outputArbiter.vhd
 vcom -93 -explicit -nocheck -quiet NoC/Thor_switchcontrol.vhd

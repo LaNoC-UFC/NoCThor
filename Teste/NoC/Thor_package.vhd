@@ -60,9 +60,6 @@ package ThorPackage is
     subtype regflit is std_logic_vector((TAM_FLIT-1) downto 0);
     subtype regmetadeflit is std_logic_vector((METADEFLIT-1) downto 0);
     subtype regquartoflit is std_logic_vector((QUARTOFLIT-1) downto 0);
-    subtype pointer is std_logic_vector((TAM_POINTER-1) downto 0);
-
-    type buff is array(0 to TAM_BUFFER-1) of regflit;
 
     type arrayNport_reg3 is array((NPORT-1) downto 0) of reg3;
     type arrayNport_regflit is array((NPORT-1) downto 0) of regflit;
