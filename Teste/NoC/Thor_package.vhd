@@ -1,6 +1,3 @@
---------------------------------------------------------------------------
--- package com tipos basicos
---------------------------------------------------------------------------
 library IEEE;
 use IEEE.Std_Logic_1164.all;
 use IEEE.std_logic_unsigned.all;
@@ -9,7 +6,7 @@ use IEEE.std_logic_arith.all;
 package ThorPackage is
 
 ---------------------------------------------------------
--- CONSTANTS INDEPENDENTES
+-- INDEPENDENT CONSTANTS 
 ---------------------------------------------------------
     constant NPORT: integer := 5;
 
@@ -20,20 +17,20 @@ package ThorPackage is
     constant LOCAL : integer := 4;
 
 ---------------------------------------------------------
--- CONSTANTS DEPENDENTES DA LARGURA DE BANDA DA REDE
+-- CONSTANTS RELATED TO THE NETWORK BANDWIDTH
 ---------------------------------------------------------
     constant TAM_FLIT : integer range 1 to 64 := 16;
     constant METADEFLIT : integer range 1 to 32 := (TAM_FLIT/2);
     constant QUARTOFLIT : integer range 1 to 16 := (TAM_FLIT/4);
 
 ---------------------------------------------------------
--- CONSTANTS DEPENDENTES DA PROFUNDIDADE DA FILA
+-- CONSTANTS RELATED TO THE DEPTH OF THE QUEUE 
 ---------------------------------------------------------
     constant TAM_BUFFER: integer := 16;
     constant TAM_POINTER : integer range 1 to 32 := 5;
 
 ---------------------------------------------------------
--- CONSTANTS DEPENDENTES DO NUMERO DE ROTEADORES
+-- CONSTANTS RELATED TO THE NUMBER OF ROUTERS
 ---------------------------------------------------------
     constant NUM_X : integer := 11;
     constant NUM_Y : integer := 11;
@@ -47,12 +44,12 @@ package ThorPackage is
     constant MAX_Y : integer := NUM_Y-1;
 
 ---------------------------------------------------------
--- VARIAVEIS DO NOVO HARDWARE
+-- NEW HARDWARE VARIABLES
 ---------------------------------------------------------
     type RouterControl is (invalidRegion, validRegion, faultPort, portError);
 
 ---------------------------------------------------------
--- SUBTIPOS, TIPOS E FUNCOES
+-- SUBTYPES, TYPES AND FUNCTIONS
 ---------------------------------------------------------
     subtype reg3 is std_logic_vector(2 downto 0);
     subtype regNrot is std_logic_vector((NROT-1) downto 0);
@@ -67,12 +64,12 @@ package ThorPackage is
 
     function CONV_VECTOR( int: integer ) return std_logic_vector;
 
-    type arrayNrot_regNport is array((NROT-1) downto 0) of regNport; -- a -- array (NROT)(NPORT)
+    type arrayNrot_regNport is array((NROT-1) downto 0) of regNport;
 
-    type matrixNrot_Nport_regflit is array((NROT-1) downto 0) of arrayNport_regflit; -- a -- array(NROT)(NPORT)(TAM_FLIT)
-
+    type matrixNrot_Nport_regflit is array((NROT-1) downto 0) of arrayNport_regflit;
+	
 ---------------------------------------------------------
--- FUNCOES TB
+-- TB FUNCTIONS
 ---------------------------------------------------------
     constant TAM_LINHA : integer := 200;
     function GET_ADDR(index : integer) return regflit;
@@ -83,7 +80,7 @@ end ThorPackage;
 package body ThorPackage is
 
     --
-    -- dado o index do roteador retorna o endereço correspondente
+    -- Get address from index
     --
     function GET_ADDR( index: integer) return regflit is
         variable addrX, addrY: regmetadeflit;
@@ -95,7 +92,7 @@ package body ThorPackage is
         return addr;
     end GET_ADDR;
     --
-    -- converte um inteiro em um std_logic_vector(2 downto 0)
+    -- Converts an integer in a std_logic_vector(2 downto 0)
     --
     function CONV_VECTOR( int: integer ) return std_logic_vector is
         variable bin: reg3;
