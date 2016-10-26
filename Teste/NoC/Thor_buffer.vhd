@@ -1,6 +1,6 @@
 library IEEE;
 use IEEE.std_logic_1164.all;
-use IEEE.std_logic_unsigned.all;
+use IEEE.numeric_std.all;
 use work.ThorPackage.all;
 
 entity Thor_buffer is
@@ -24,7 +24,7 @@ architecture Thor_buffer of Thor_buffer is
 type fila_out is (S_INIT, S_PAYLOAD, S_SENDHEADER, S_HEADER, S_END, S_END2);
 signal EA : fila_out;
 
-signal counter_flit: regflit := (others=>'0');
+signal counter_flit: integer;
 signal aux_data_av: std_logic;
 signal pull: std_Logic;
 signal bufferHead : regflit;
@@ -55,7 +55,7 @@ begin
     process(reset, clock)
     begin
         if reset = '1' then
-            counter_flit <= (others=>'0');
+            counter_flit <= 0;
             h <= '0';
             aux_data_av <= '0';
             pull <= '0';
@@ -64,7 +64,7 @@ begin
         elsif clock'event and clock = '1' then
             case EA is
                 when S_INIT =>
-                    counter_flit <= (others=>'0');
+                    counter_flit <= 0;
                     aux_data_av <= '0';
                     if not isEmpty then
                         h <= '1';
@@ -89,11 +89,11 @@ begin
                     end if;
                 when S_PAYLOAD =>
                     if data_ack = '1' and aux_data_av = '1' then
-                        if counter_flit = x"0" then
-                            counter_flit <=  bufferHead;
+                        if counter_flit = 0 then
+                            counter_flit <=  to_integer(unsigned(bufferHead));
                             aux_data_av <= not isLast;
                             pull <= '1';						 
-                        elsif counter_flit /= x"1" then
+                        elsif counter_flit /= 1 then
                             counter_flit <= counter_flit - 1;
                             aux_data_av <= not isLast;
                             pull <= '1';

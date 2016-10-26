@@ -13,7 +13,7 @@
 
 library IEEE;
 use IEEE.std_logic_1164.all;
-use IEEE.std_logic_unsigned.all;
+use IEEE.numeric_std.all;
 use work.ThorPackage.all;
 
 entity Thor_crossbar is
@@ -35,9 +35,9 @@ architecture Thor_crossbar of Thor_crossbar is
 begin
 
 	MUXS : for i in EAST to LOCAL generate
-		tx(i) <= data_av( CONV_INTEGER( tab_out(i) ) ) when free(i) = '0' else '0';
-		data_out(i) <= data_in( CONV_INTEGER( tab_out(i) ) ) when free(i) = '0' else (others=>'0');
-		data_ack(i) <= credit_i( CONV_INTEGER( tab_in(i) ) ) when data_av(i) = '1' else '0';
+		tx(i) <= data_av( TO_INTEGER( unsigned(tab_out(i)) ) ) when free(i) = '0' else '0';
+		data_out(i) <= data_in( TO_INTEGER( unsigned(tab_out(i)) ) ) when free(i) = '0' else (others=>'0');
+		data_ack(i) <= credit_i( TO_INTEGER( unsigned(tab_in(i)) ) ) when data_av(i) = '1' else '0';
 	end generate MUXS;		
 
 end Thor_crossbar;
