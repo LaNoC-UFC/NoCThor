@@ -1,6 +1,6 @@
 library IEEE;
 use IEEE.STD_LOGIC_1164.all;
-use IEEE.STD_LOGIC_unsigned.all;
+use ieee.numeric_std.all;
 use work.ThorPackage.all;
 use work.TablePackage.all;
 
@@ -41,7 +41,7 @@ architecture RoutingTable of SwitchControl is
 begin
     ask <= '1' when OR_REDUCTION(h) else '0';
     incoming <= CONV_VECTOR(sel);
-    header <= data(CONV_INTEGER(incoming));
+    header <= data(TO_INTEGER(unsigned(incoming)));
 
     process(sel, h)
     begin
@@ -164,7 +164,7 @@ begin
                         ceTable <= '1';
                     end if;
                 when S4 =>
-                    source(CONV_INTEGER(incoming)) <= CONV_VECTOR(indice_dir);
+                    source(TO_INTEGER(unsigned(incoming))) <= CONV_VECTOR(indice_dir);
                     mux_out(indice_dir) <= incoming;
                     auxfree(indice_dir) <= '0';
                     ack_h(sel)<='1';
@@ -177,7 +177,7 @@ begin
             
             for i in EAST to LOCAL loop
                 if sender(i)='0' and  sender_ant(i)='1' then 
-                    auxfree(CONV_INTEGER(source(i))) <= '1'; 
+                    auxfree(TO_INTEGER(unsigned(source(i)))) <= '1'; 
                 end if;
             end loop;
 

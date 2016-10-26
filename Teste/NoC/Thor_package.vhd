@@ -1,7 +1,6 @@
 library IEEE;
 use IEEE.Std_Logic_1164.all;
-use IEEE.std_logic_unsigned.all;
-use IEEE.std_logic_arith.all;
+use IEEE.numeric_std.all;
 
 package ThorPackage is
 
@@ -86,8 +85,8 @@ package body ThorPackage is
         variable addrX, addrY: regmetadeflit;
         variable addr: regflit;
     begin
-        addrX := CONV_STD_LOGIC_VECTOR(index/NUM_X,METADEFLIT);
-        addrY := CONV_STD_LOGIC_VECTOR(index mod NUM_Y, METADEFLIT); 
+        addrX := std_logic_vector(to_unsigned(index/NUM_X,METADEFLIT));
+        addrY := std_logic_vector(to_unsigned(index mod NUM_Y, METADEFLIT)); 
         addr := addrX & addrY;
         return addr;
     end GET_ADDR;
@@ -115,7 +114,7 @@ package body ThorPackage is
     --
     function OR_REDUCTION( arrayN: in std_logic_vector ) return boolean is
     begin
-        return arrayN /= 0;
+        return unsigned(arrayN) /= 0;
     end OR_REDUCTION;
 
 end ThorPackage;

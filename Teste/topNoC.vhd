@@ -1,11 +1,9 @@
 library IEEE;
 use IEEE.std_logic_1164.all;
-use ieee.std_logic_arith.CONV_STD_LOGIC_VECTOR;
 use work.ThorPackage.all;
 
 entity topNoC is
 end;
-
 
 architecture topNoC of topNoC is
 
