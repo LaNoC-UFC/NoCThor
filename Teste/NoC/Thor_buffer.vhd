@@ -97,7 +97,7 @@ begin
                             counter_flit <= counter_flit - 1;
                             aux_data_av <= not isLast;
                             pull <= '1';
-                        else -- counter_flit = x"1"					
+                        else 					
                             aux_data_av <= '0';
                             pull <= '1';
                             sender <= '0';
@@ -106,7 +106,7 @@ begin
                     elsif isEmpty then
                         aux_data_av <= '0';
                         pull <= '0';
-                    else -- not isEmpty
+                    else 
                         aux_data_av <= '1';
                         pull <= '0';
                     end if;

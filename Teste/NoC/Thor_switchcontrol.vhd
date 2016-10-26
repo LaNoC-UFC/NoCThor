@@ -24,24 +24,17 @@ architecture RoutingTable of SwitchControl is
 
     type state is (S0,S1,S2,S3,S4,S5);
     signal ES, PES: state;
-
--- sinais do arbitro
     signal ask: std_logic := '0';
     signal sel,prox: integer range 0 to (NPORT-1) := 0;
     signal incoming: reg3 := (others=> '0');
     signal header : regflit := (others=> '0');
-
--- sinais do controle
     signal indice_dir: integer range 0 to (NPORT-1) := 0;
     signal auxfree: regNport := (others=> '0');
     signal source:  arrayNport_reg3 := (others=> (others=> '0'));
     signal sender_ant: regNport := (others=> '0');
     signal dir: regNport:= (others=> '0');
-
--- sinais de controle da tabela
     signal find: RouterControl;
     signal ceTable: std_logic := '0';
-    
     signal selectedOutput : integer := 0;
     signal isOutputSelected : std_logic;
     
@@ -149,14 +142,10 @@ begin
         end case;
     end process;
 
-    ------------------------------------------------------------------------------------------------------
-    -- executa as ações correspondente ao estado atual da máquina de estados
-    ------------------------------------------------------------------------------------------------------
     process(clock)
     begin
         if clock'event and clock='1' then
             case ES is
-                -- Zera variáveis
                 when S0 =>
                     ceTable <= '0';
                     sel <= 0;
@@ -165,14 +154,11 @@ begin
                     sender_ant <= (others=> '0');
                     mux_out <= (others=>(others=>'0'));
                     source <= (others=>(others=>'0'));
-                -- Chegou um header
                 when S1=>
                     ceTable <= '0';
                     ack_h <= (others => '0');
-                -- Seleciona quem tera direito a requisitar roteamento
                 when S2=>
                     sel <= prox;
-                -- Aguarda resposta da Tabela                    
                 when S3 =>
                     if address /= header then
                         ceTable <= '1';
