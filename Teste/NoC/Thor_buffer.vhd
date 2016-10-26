@@ -35,6 +35,8 @@ signal counter : integer;
 begin
 
     circularFifoBuffer : entity work.FifoBuffer
+    generic map(B_DEPTH => TAM_BUFFER , 
+                B_WIDTH => regflit'length)
     port map(
         reset =>     reset,
         clock =>     clock_rx,
