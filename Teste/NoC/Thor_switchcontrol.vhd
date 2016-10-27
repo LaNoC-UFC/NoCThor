@@ -79,7 +79,7 @@ begin
     begin
         if reset='1' then
             ES<=S0;
-        elsif clock'event and clock='0' then
+        elsif clock'event and clock='1' then
             ES<=PES;
         end if;
     end process;
