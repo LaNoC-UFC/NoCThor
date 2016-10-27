@@ -110,7 +110,7 @@ begin
         end if;
     end process;
 
-    process(ES, ask, auxfree, find, selectedOutput, isOutputSelected)
+    process(ES, ask, auxfree, find, selectedOutput, isOutputSelected, header)
     begin
 
         case ES is

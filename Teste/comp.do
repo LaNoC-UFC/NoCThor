@@ -2,26 +2,37 @@ exit -sim
 vlib work
 vmap work work
 
-# Packages
-vcom -93 -explicit -nocheck -quiet NoC/Thor_package.vhd
-vcom -93 -explicit -nocheck -quiet NoC/Table_package.vhd
+proc comp_vhdl {vhdl_source} {
+    vcom -work work -93 -explicit -bindAtCompile -check_synthesis -fsmverbose w\
+    -ignoredefaultbinding -lint -noDeferSubpgmCheck -nologo -pedanticerrors\
+    -quiet -rangecheck $vhdl_source
+}
 
-# NoC
-vcom -93 -explicit -nocheck -quiet NoC/Thor_RM.vhd
-vcom -93 -explicit -nocheck -quiet NoC/fifo_buffer.vhd
-vcom -93 -explicit -nocheck -quiet NoC/Thor_buffer.vhd
-vcom -93 -explicit -nocheck -quiet NoC/outputArbiter.vhd
-vcom -93 -explicit -nocheck -quiet NoC/Thor_switchcontrol.vhd
-vcom -93 -explicit -nocheck -quiet NoC/Thor_crossbar.vhd
-vcom -93 -explicit -nocheck -quiet NoC/RouterCC.vhd
+proc comp_sc {sc_source} {
+    sccom -g -explicit -incr $sc_source
+}
+
+set source_files {
+    NoC/Thor_package.vhd
+    NoC/Table_package.vhd
+    NoC/Thor_RM.vhd
+    NoC/fifo_buffer.vhd
+    NoC/Thor_buffer.vhd
+    NoC/outputArbiter.vhd
+    NoC/Thor_switchcontrol.vhd
+    NoC/Thor_crossbar.vhd
+    NoC/RouterCC.vhd
+    NoC/NOC.vhd
+}
+
+foreach file $source_files {
+    comp_vhdl $file
+}
 
 # SystemC's stuff
-sccom -g -explicit -incr Monitores/SC_inmod.cpp
-sccom -g -explicit -incr Monitores/SC_outmod.cpp
+comp_sc Monitores/SC_inmod.cpp
+comp_sc Monitores/SC_outmod.cpp
 sccom -link
 
 # TestBench
-vcom -93 -explicit -nocheck -quiet NoC/NOC.vhd
-vcom -93 -explicit -nocheck -quiet topNoC.vhd
-
-#quit -f
+comp_vhdl topNoC.vhd
