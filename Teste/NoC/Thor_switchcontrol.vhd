@@ -28,6 +28,8 @@ architecture RoutingTable of SwitchControl is
     signal sel,prox: integer range 0 to (NPORT-1) := 0;
     signal incoming: reg3 := (others=> '0');
     signal header : regflit := (others=> '0');
+    signal ready, enable : std_logic;
+
     signal indice_dir: integer range 0 to (NPORT-1) := 0;
     signal auxfree: regNport := (others=> '0');
     signal source:  arrayNport_reg3 := (others=> (others=> '0'));
@@ -44,41 +46,13 @@ begin
     incoming <= CONV_VECTOR(sel);
     header <= data(TO_INTEGER(unsigned(incoming)));
 
-    process(sel, h)
-    begin
-        case sel is
-            when LOCAL=>
-                if h(EAST)='1' then prox<=EAST;
-                elsif h(WEST)='1' then prox<=WEST;
-                elsif h(NORTH)='1' then prox<=NORTH;
-                elsif h(SOUTH)='1' then prox<=SOUTH;
-                else prox<=LOCAL; end if;
-            when EAST=>
-                if h(WEST)='1' then prox<=WEST;
-                elsif h(NORTH)='1' then prox<=NORTH;
-                elsif h(SOUTH)='1' then prox<=SOUTH;
-                elsif h(LOCAL)='1' then prox<=LOCAL;
-                else prox<=EAST; end if;
-            when WEST=>
-                if h(NORTH)='1' then prox<=NORTH;
-                elsif h(SOUTH)='1' then prox<=SOUTH;
-                elsif h(LOCAL)='1' then prox<=LOCAL;
-                elsif h(EAST)='1' then prox<=EAST;
-                else prox<=WEST; end if;
-            when NORTH=>
-                if h(SOUTH)='1' then prox<=SOUTH;
-                elsif h(LOCAL)='1' then prox<=LOCAL;
-                elsif h(EAST)='1' then prox<=EAST;
-                elsif h(WEST)='1' then prox<=WEST;
-                else prox<=NORTH; end if;
-            when SOUTH=>
-                if h(LOCAL)='1' then prox<=LOCAL;
-                elsif h(EAST)='1' then prox<=EAST;
-                elsif h(WEST)='1' then prox<=WEST;
-                elsif h(NORTH)='1' then prox<=NORTH;
-                else prox<=SOUTH; end if;
-        end case;
-    end process;
+    InputArbiter : entity work.inputArbiter
+    port map(
+        requests => h,
+        enable => enable,
+        nextPort => prox,
+        ready => ready
+    );
 
     RoutingMechanism : entity work.routingMechanism
     generic map(ramInit => ramInit)
@@ -105,7 +79,7 @@ begin
     begin
         if reset='1' then
             ES<=S0;
-        elsif clock'event and clock='0' then
+        elsif clock'event and clock='1' then
             ES<=PES;
         end if;
     end process;
@@ -156,10 +130,12 @@ begin
                     mux_out <= (others=>(others=>'0'));
                     source <= (others=>(others=>'0'));
                 when S1=>
+                    enable <= ask;
                     ceTable <= '0';
                     ack_h <= (others => '0');
                 when S2=>
                     sel <= prox;
+                    enable <= not ready;
                 when S3 =>
                     if address /= header then
                         ceTable <= '1';
