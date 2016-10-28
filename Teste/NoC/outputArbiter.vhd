@@ -1,9 +1,9 @@
 library IEEE;
 use IEEE.STD_LOGIC_1164.all;
 
-entity outputArbiter is   
-    generic(    
-        size : natural 
+entity outputArbiter is
+    generic(
+        size : natural
     );
     port(
         requests :              in std_logic_vector(size-1 downto 0);
@@ -15,7 +15,7 @@ end;
 
 architecture outputArbiter of outputArbiter is
 begin
-    
+
     process(requests, enable)
         variable auxDone : std_logic;
         variable auxSelected : integer;
@@ -30,9 +30,9 @@ begin
                     exit;
                 end if;
             end loop;
-        end if; 
+        end if;
         isOutputSelected <= auxDone;
-        selectedOutput <= auxSelected;              
+        selectedOutput <= auxSelected;
     end process;
 
 end outputArbiter;

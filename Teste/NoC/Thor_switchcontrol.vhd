@@ -40,7 +40,7 @@ architecture RoutingTable of SwitchControl is
     signal ceTable: std_logic := '0';
     signal selectedOutput : integer := 0;
     signal isOutputSelected : std_logic;
-    
+
 begin
     ask <= '1' when OR_REDUCTION(h) else '0';
     incoming <= CONV_VECTOR(sel);
@@ -65,7 +65,7 @@ begin
        outputPort => dir,
        find => find
     );
-    
+
     OutputArbiter : entity work.outputArbiter
     generic map(size => requests'length)
     port map(
@@ -89,11 +89,11 @@ begin
 
         case ES is
             when S0 => PES <= S1;
-            when S1 => 
-                if ask='1' then 
-                    PES <= S2; 
-                else 
-                    PES <= S1; 
+            when S1 =>
+                if ask='1' then
+                    PES <= S2;
+                else
+                    PES <= S1;
                 end if;
             when S2 => PES <= S3;
             when S3 =>
@@ -145,24 +145,24 @@ begin
                     mux_out(indice_dir) <= incoming;
                     auxfree(indice_dir) <= '0';
                     ack_h(sel)<='1';
-                when others => 
+                when others =>
                     ack_h(sel)<='0';
                     ceTable <= '0';
             end case;
 
             sender_ant <= sender;
-            
+
             for i in EAST to LOCAL loop
-                if sender(i)='0' and  sender_ant(i)='1' then 
-                    auxfree(TO_INTEGER(unsigned(source(i)))) <= '1'; 
+                if sender(i)='0' and  sender_ant(i)='1' then
+                    auxfree(TO_INTEGER(unsigned(source(i)))) <= '1';
                 end if;
             end loop;
 
         end if;
     end process;
-    
+
     mux_in <= source;
     free <= auxfree;
     requests <= auxfree AND dir;
-	
+
 end RoutingTable;
