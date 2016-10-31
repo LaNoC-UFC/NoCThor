@@ -5,7 +5,7 @@ use IEEE.numeric_std.all;
 package ThorPackage is
 
 ---------------------------------------------------------
--- INDEPENDENT CONSTANTS 
+-- INDEPENDENT CONSTANTS
 ---------------------------------------------------------
     constant NPORT: integer := 5;
 
@@ -23,7 +23,7 @@ package ThorPackage is
     constant QUARTOFLIT : integer range 1 to 16 := (TAM_FLIT/4);
 
 ---------------------------------------------------------
--- CONSTANTS RELATED TO THE DEPTH OF THE QUEUE 
+-- CONSTANTS RELATED TO THE DEPTH OF THE QUEUE
 ---------------------------------------------------------
     constant TAM_BUFFER: integer := 16;
     constant TAM_POINTER : integer range 1 to 32 := 5;
@@ -35,10 +35,10 @@ package ThorPackage is
     constant NUM_Y : integer := 11;
 
     constant NROT: integer := NUM_X*NUM_Y;
-    
+
     constant MIN_X : integer := 0;
     constant MIN_Y : integer := 0;
-    
+
     constant MAX_X : integer := NUM_X-1;
     constant MAX_Y : integer := NUM_Y-1;
 
@@ -66,14 +66,14 @@ package ThorPackage is
     type arrayNrot_regNport is array((NROT-1) downto 0) of regNport;
 
     type matrixNrot_Nport_regflit is array((NROT-1) downto 0) of arrayNport_regflit;
-	
+
 ---------------------------------------------------------
 -- TB FUNCTIONS
 ---------------------------------------------------------
     constant TAM_LINHA : integer := 200;
     function GET_ADDR(index : integer) return regflit;
     function OR_REDUCTION(arrayN : std_logic_vector ) return boolean;
-    
+
 end ThorPackage;
 
 package body ThorPackage is
@@ -86,7 +86,7 @@ package body ThorPackage is
         variable addr: regflit;
     begin
         addrX := std_logic_vector(to_unsigned(index/NUM_X,METADEFLIT));
-        addrY := std_logic_vector(to_unsigned(index mod NUM_Y, METADEFLIT)); 
+        addrY := std_logic_vector(to_unsigned(index mod NUM_Y, METADEFLIT));
         addr := addrX & addrY;
         return addr;
     end GET_ADDR;
