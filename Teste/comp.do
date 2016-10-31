@@ -4,7 +4,7 @@ vmap work work
 
 proc comp_vhdl {vhdl_source} {
     vcom -work work -93 -explicit -bindAtCompile -check_synthesis -fsmverbose w\
-    -ignoredefaultbinding -lint -noDeferSubpgmCheck -nologo -pedanticerrors\
+    -lint -noDeferSubpgmCheck -nologo -pedanticerrors\
     -quiet -rangecheck $vhdl_source
 }
 
