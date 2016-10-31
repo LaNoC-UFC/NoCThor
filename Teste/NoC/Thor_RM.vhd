@@ -30,8 +30,8 @@ architecture behavior of routingMechanism is
 
 begin
 
-    dst_x <= TO_INTEGER(unsigned(dst_address(TAM_FLIT-1 downto METADEFLIT))) when oe = '1' else 0;
-    dst_y <= TO_INTEGER(unsigned(dst_address(METADEFLIT-1 downto 0))) when oe = '1' else 0;
+    dst_x <= X_COORDINATE(dst_address) when oe = '1' else 0;
+    dst_y <= Y_COORDINATE(dst_address) when oe = '1' else 0;
 
     cond: for j in 0 to (NREG - 1) generate
 

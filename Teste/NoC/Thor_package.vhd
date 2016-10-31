@@ -71,6 +71,8 @@ package ThorPackage is
 -- TB FUNCTIONS
 ---------------------------------------------------------
     function ADDRESS_FROM_INDEX(index : integer) return regflit;
+    function X_COORDINATE(address: regflit) return natural;
+    function Y_COORDINATE(address: regflit) return natural;
     function OR_REDUCTION(arrayN : std_logic_vector ) return boolean;
 
 end ThorPackage;
@@ -86,6 +88,16 @@ package body ThorPackage is
         addr := addrX & addrY;
         return addr;
     end ADDRESS_FROM_INDEX;
+
+    function X_COORDINATE(address: regflit) return natural is
+    begin
+        return TO_INTEGER(unsigned(address(TAM_FLIT-1 downto METADEFLIT)));
+    end X_COORDINATE;
+
+    function Y_COORDINATE(address: regflit) return natural is
+    begin
+        return TO_INTEGER(unsigned(address(METADEFLIT-1 downto 0)));
+    end Y_COORDINATE;
     --
     -- Converts an integer in a std_logic_vector(2 downto 0)
     --
