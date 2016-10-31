@@ -60,7 +60,7 @@ begin
        clock => clock,
        reset => reset,
        oe => ceTable,
-       dest => header,
+       dst_address => header,
        inputPort => sel,
        outputPort => dir,
        find => find

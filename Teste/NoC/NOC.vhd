@@ -28,7 +28,7 @@ begin
         n : Entity work.RouterCC
         generic map
         (
-            address => GET_ADDR(i),
+            address => ADDRESS_FROM_INDEX(i),
             ramInit => TAB(i)
         )
         port map
