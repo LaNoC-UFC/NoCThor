@@ -31,8 +31,8 @@ package ThorPackage is
 ---------------------------------------------------------
 -- CONSTANTS RELATED TO THE NUMBER OF ROUTERS
 ---------------------------------------------------------
-    constant NUM_X : integer := 11;
-    constant NUM_Y : integer := 11;
+    constant NUM_X : integer := 2;
+    constant NUM_Y : integer := 2;
 
     constant NROT: integer := NUM_X*NUM_Y;
 
