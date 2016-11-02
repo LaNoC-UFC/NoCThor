@@ -63,7 +63,7 @@ begin
             pull <= '0';
             sender <=  '0';
             EA <= S_INIT;
-        elsif clock'event and clock = '1' then
+        elsif rising_edge(clock) then
             case EA is
                 when S_INIT =>
                     counter_flit <= 0;

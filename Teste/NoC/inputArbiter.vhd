@@ -22,7 +22,7 @@ begin
     process(enable)
         variable designedPort : integer range 0 to (NPORT-1);
     begin
-        if(enable'event and enable = '1') then
+        if rising_edge(enable) then
             case lastPort is
                 when LOCAL=>
                     if requests(EAST)='1' then designedPort := EAST;
