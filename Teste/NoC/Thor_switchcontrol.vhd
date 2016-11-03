@@ -84,7 +84,7 @@ begin
         end if;
     end process;
 
-    process(ES, ask, auxfree, find, selectedOutput, isOutputSelected, header)
+    process(ES, ask, auxfree, find, isOutputSelected, header)
     begin
 
         case ES is
@@ -98,11 +98,9 @@ begin
             when S2 => PES <= S3;
             when S3 =>
                 if address = header and auxfree(LOCAL) = '1' then
-                    indice_dir <= LOCAL;
                     PES <= S4;
                 elsif(find = validRegion) then
                     if (isOutputSelected = '1') then
-                        indice_dir <= selectedOutput;
                         PES <= S4;
                     else
                         PES <= S1;
@@ -137,7 +135,11 @@ begin
                     sel <= prox;
                     enable <= not ready;
                 when S3 =>
-                    if address /= header then
+                    if (address = header and auxfree(LOCAL) = '1') then
+                        indice_dir <= LOCAL;
+                    elsif(find = validRegion and isOutputSelected = '1') then
+                        indice_dir <= selectedOutput;
+                    elsif (address /= header) then
                         ceTable <= '1';
                     end if;
                 when S4 =>
