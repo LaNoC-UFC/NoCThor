@@ -40,7 +40,7 @@ begin
     begin
         if reset = '1' then
             last <= 0;
-        elsif clock'event and clock = '1' then
+        elsif rising_edge(clock) then
             if not isFull and push = '1' then
                 buf(last) <= tail;
                 if last = B_DEPTH then
@@ -55,7 +55,7 @@ begin
     begin
         if reset = '1' then
             first <= 0;
-        elsif clock'event and clock = '1' then
+        elsif rising_edge(clock) then
             if not isEmpty and pull = '1' then
                 if first = B_DEPTH then
                     first <= 0;
