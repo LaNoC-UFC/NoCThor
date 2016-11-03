@@ -43,7 +43,7 @@ architecture RoutingTable of SwitchControl is
 
 begin
     ask <= '1' when OR_REDUCTION(h) else '0';
-    incoming <= CONV_VECTOR(sel);
+    incoming <= std_logic_vector(to_unsigned(sel, incoming'length));
     header <= data(TO_INTEGER(unsigned(incoming)));
 
     InputArbiter : entity work.inputArbiter
@@ -141,7 +141,7 @@ begin
                         ceTable <= '1';
                     end if;
                 when S4 =>
-                    source(TO_INTEGER(unsigned(incoming))) <= CONV_VECTOR(indice_dir);
+                    source(TO_INTEGER(unsigned(incoming))) <= std_logic_vector(to_unsigned(indice_dir, incoming'length));
                     mux_out(indice_dir) <= incoming;
                     auxfree(indice_dir) <= '0';
                     ack_h(sel)<='1';

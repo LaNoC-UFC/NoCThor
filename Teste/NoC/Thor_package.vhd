@@ -61,8 +61,6 @@ package ThorPackage is
     type arrayNport_regflit is array((NPORT-1) downto 0) of regflit;
     type arrayNrot_regflit is array((NROT-1) downto 0) of regflit;
 
-    function CONV_VECTOR( int: integer ) return std_logic_vector;
-
     type arrayNrot_regNport is array((NROT-1) downto 0) of regNport;
 
     type matrixNrot_Nport_regflit is array((NROT-1) downto 0) of arrayNport_regflit;
@@ -98,25 +96,6 @@ package body ThorPackage is
     begin
         return TO_INTEGER(unsigned(address(METADEFLIT-1 downto 0)));
     end Y_COORDINATE;
-    --
-    -- Converts an integer in a std_logic_vector(2 downto 0)
-    --
-    function CONV_VECTOR( int: integer ) return std_logic_vector is
-        variable bin: reg3;
-    begin
-        case(int) is
-            when 0 => bin := "000";
-            when 1 => bin := "001";
-            when 2 => bin := "010";
-            when 3 => bin := "011";
-            when 4 => bin := "100";
-            when 5 => bin := "101";
-            when 6 => bin := "110";
-            when 7 => bin := "111";
-            when others => bin := "000";
-        end case;
-        return bin;
-    end CONV_VECTOR;
     --
     -- Do a OR operation between all elements in an array
     --
