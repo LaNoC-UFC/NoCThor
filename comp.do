@@ -31,8 +31,8 @@ foreach file $source_files {
 }
 
 # SystemC's stuff
-comp_sc Monitores/SC_inmod.cpp
-comp_sc Monitores/SC_outmod.cpp
+comp_sc Monitors/SC_inmod.cpp
+comp_sc Monitors/SC_outmod.cpp
 sccom -link
 
 # TestBench
