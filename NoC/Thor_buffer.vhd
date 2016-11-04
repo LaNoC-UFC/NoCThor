@@ -21,17 +21,18 @@ end Thor_buffer;
 
 architecture Thor_buffer of Thor_buffer is
 
-type fila_out is (S_INIT, S_PAYLOAD, S_SENDHEADER, S_HEADER, S_END, S_END2);
-signal EA : fila_out;
+type fila_out is (REQ_ROUTING, SEND_DATA);
+signal next_state, current_state : fila_out;
 
-signal counter_flit: integer;
-signal aux_data_av: std_logic;
-signal pull: std_Logic;
+signal pull: std_logic;
 signal bufferHead : regflit;
-signal isLast : std_logic;
-signal isEmpty: boolean;
-signal isFull: boolean;
+signal has_data: std_logic;
+signal has_data_and_sending : std_logic;
 signal counter : integer;
+
+signal sending : std_logic;
+signal sent : std_logic;
+
 begin
 
     circularFifoBuffer : entity work.FifoBuffer
@@ -48,79 +49,75 @@ begin
     );
 
     data <= bufferHead;
-    data_av <= aux_data_av;
-    isEmpty <= counter = 0;
-    isFull <= counter = TAM_BUFFER;
-    credit_o <= '1' when (not isFull) else '0';
-    isLast <= '1' when (counter = 1) else '0';
+    data_av <= has_data_and_sending;
+    credit_o <= '1' when (counter /= TAM_BUFFER) else '0';
+    sender <= sending;
+    h <= has_data and not sending;
+
+    pull <= data_ack and has_data_and_sending;
+    has_data <= '1' when (counter /= 0) else '0';
+    has_data_and_sending <= has_data and sending;
+
+    process(current_state, ack_h, sent)
+    begin
+        next_state <= current_state;
+        case current_state is
+            when REQ_ROUTING =>
+                if ack_h = '1' then
+                    next_state <= SEND_DATA;
+                end if;
+
+            when SEND_DATA =>
+                if sent = '1' then
+                    next_state <= REQ_ROUTING;
+                end if;
+        end case;
+    end process;
 
     process(reset, clock)
     begin
         if reset = '1' then
-            counter_flit <= 0;
-            h <= '0';
-            aux_data_av <= '0';
-            pull <= '0';
-            sender <=  '0';
-            EA <= S_INIT;
+            current_state <= REQ_ROUTING;
         elsif rising_edge(clock) then
-            case EA is
-                when S_INIT =>
-                    counter_flit <= 0;
-                    aux_data_av <= '0';
-                    if not isEmpty then
-                        h <= '1';
-                        EA <= S_HEADER;
-                    else
-                        h <= '0';
+            current_state <= next_state;
+        end if;
+    end process;
+
+    process(current_state, sent)
+    begin
+        case current_state is
+            when SEND_DATA =>
+                sending <= not sent;
+            when others =>
+                sending <= '0';
+        end case;
+    end process;
+
+    process(reset, clock)
+        variable flit_index : integer;
+        variable counter_flit : integer;
+    begin
+        if reset = '1' then
+            sent <= '0';
+        elsif rising_edge(clock) then
+            if sending = '1' then
+                if data_ack = '1' and has_data = '1' then
+                    sent <= '0';
+                    if flit_index = 1 then
+                        counter_flit :=  to_integer(unsigned(bufferHead));
+                    elsif counter_flit /= 1 then
+                        counter_flit := counter_flit - 1;
+                    else -- counter_flit = 1
+                        sent <= '1';
                     end if;
-                when S_HEADER =>
-                    if ack_h = '1' then
-                        EA <= S_SENDHEADER;
-                        h <= '0';
-                        aux_data_av <= '1';
-                        sender <= '1';
-                    end if;
-                when S_SENDHEADER  =>
-                    if data_ack = '1' and aux_data_av = '1' then
-                        EA <= S_PAYLOAD;
-                        aux_data_av <= not isLast;
-                        pull <= '1';
-                    else
-                        pull <= '0';
-                    end if;
-                when S_PAYLOAD =>
-                    if data_ack = '1' and aux_data_av = '1' then
-                        if counter_flit = 0 then
-                            counter_flit <=  to_integer(unsigned(bufferHead));
-                            aux_data_av <= not isLast;
-                            pull <= '1';
-                        elsif counter_flit /= 1 then
-                            counter_flit <= counter_flit - 1;
-                            aux_data_av <= not isLast;
-                            pull <= '1';
-                        else
-                            aux_data_av <= '0';
-                            pull <= '1';
-                            sender <= '0';
-                            EA <= S_END;
-                        end if;
-                    elsif isEmpty then
-                        aux_data_av <= '0';
-                        pull <= '0';
-                    else
-                        aux_data_av <= '1';
-                        pull <= '0';
-                    end if;
-                when S_END =>
-                    pull <= '0';
-                    aux_data_av <= '0';
-                    EA <= S_END2;
-                when S_END2 =>
-                    pull <= '0';
-                    aux_data_av <= '0';
-                    EA <= S_INIT;
-            end case;
+                    flit_index := flit_index + 1;
+                else
+                end if;
+            else
+                flit_index := 0;
+                counter_flit := 0;
+                sent <= '0';
+            end if;
         end if;
     end process;
 
