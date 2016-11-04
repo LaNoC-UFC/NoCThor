@@ -1,9 +1,9 @@
-Teste/Out/*.txt
-Teste/In/*.txt
-Teste/work/
-Teste/wave.do
-Teste/vsim.wlf
-Teste/npack
+Out/*.txt
+In/*.txt
+work/
+wave.do
+vsim.wlf
+npack
 *transcript
 *~
 *.ini
