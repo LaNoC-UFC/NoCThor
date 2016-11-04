@@ -2,7 +2,7 @@ library IEEE;
 use IEEE.Std_Logic_1164.all;
 use IEEE.numeric_std.all;
 
-package ThorPackage is
+package NoCPackage is
 
 ---------------------------------------------------------
 -- INDEPENDENT CONSTANTS
@@ -73,9 +73,9 @@ package ThorPackage is
     function Y_COORDINATE(address: regflit) return natural;
     function OR_REDUCTION(arrayN : std_logic_vector ) return boolean;
 
-end ThorPackage;
+end NoCPackage;
 
-package body ThorPackage is
+package body NoCPackage is
 
     function ADDRESS_FROM_INDEX(index: integer) return regflit is
         variable addrX, addrY: regmetadeflit;
@@ -104,4 +104,4 @@ package body ThorPackage is
         return unsigned(arrayN) /= 0;
     end OR_REDUCTION;
 
-end ThorPackage;
+end NoCPackage;
