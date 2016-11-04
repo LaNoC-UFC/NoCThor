@@ -1,7 +1,7 @@
 library IEEE;
 use IEEE.std_logic_1164.all;
 use IEEE.numeric_std.all;
-use work.ThorPackage.all;
+use work.NoCPackage.all;
 
 entity Thor_crossbar is
 port(

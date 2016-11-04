@@ -1,6 +1,6 @@
 library IEEE;
 use IEEE.std_logic_1164.all;
-use work.ThorPackage.all;
+use work.NoCPackage.all;
 use work.TablePackage.all;
 
 entity RouterCC is
