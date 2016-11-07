@@ -4,8 +4,8 @@ use ieee.numeric_std.all;
 
 entity fifoBuffer is
     generic(
-        B_DEPTH : natural;
-        B_WIDTH : natural
+        B_DEPTH : positive;
+        B_WIDTH : positive
     );
     port(
         reset :     in std_logic;
@@ -14,7 +14,7 @@ entity fifoBuffer is
         tail :      in std_logic_vector(B_WIDTH-1 downto 0);
         push :      in std_logic;
         pull :      in std_logic;
-        counter :   out integer
+        counter :   out natural
     );
 end;
 
@@ -24,9 +24,9 @@ architecture circularFifoBuffer of FifoBuffer is
     signal buf: buff := (others=>(others=>'0'));
 
     signal isFull, isEmpty : boolean;
-    signal first: integer := 0;
-    signal last: integer := 0;
-    signal auxCounter: integer;
+    signal first: natural range 0 to B_DEPTH := 0;
+    signal last: natural range 0 to B_DEPTH := 0;
+    signal auxCounter: natural;
 
 begin
 
