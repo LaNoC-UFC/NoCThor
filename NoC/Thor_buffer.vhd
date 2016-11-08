@@ -50,7 +50,7 @@ begin
 
     data <= bufferHead;
     data_av <= has_data_and_sending;
-    credit_o <= '1' when (counter /= TAM_BUFFER) else '0';
+    credit_o <= '1' when (counter /= TAM_BUFFER or pull = '1') else '0';
     sender <= sending;
     h <= has_data and not sending;
 
