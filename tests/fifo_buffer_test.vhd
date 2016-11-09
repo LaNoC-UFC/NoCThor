@@ -28,10 +28,10 @@ begin
     reset <= '1', '0' after CLOCK_PERIOD/4;
     clock <= not clock after CLOCK_PERIOD/2;
 
-    UUT : entity work.fifoBuffer
+    UUT : entity work.fifo_buffer
     generic map(
-        B_DEPTH => BUFFER_DEPTH,
-        B_WIDTH => BUFFER_WIDTH)
+        BUFFER_DEPTH => BUFFER_DEPTH,
+        BUFFER_WIDTH => BUFFER_WIDTH)
     port map(
         reset => reset,
         clock => clock,

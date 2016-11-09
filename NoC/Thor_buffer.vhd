@@ -35,9 +35,9 @@ signal sent : std_logic;
 
 begin
 
-    circularFifoBuffer : entity work.FifoBuffer
-    generic map(B_DEPTH => TAM_BUFFER ,
-                B_WIDTH => regflit'length)
+    circularFifoBuffer : entity work.fifo_buffer
+    generic map(BUFFER_DEPTH => TAM_BUFFER ,
+                BUFFER_WIDTH => regflit'length)
     port map(
         reset =>     reset,
         clock =>     clock_rx,
