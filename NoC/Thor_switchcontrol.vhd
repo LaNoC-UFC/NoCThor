@@ -47,6 +47,7 @@ begin
     header <= data(TO_INTEGER(unsigned(incoming)));
 
     InputArbiter : entity work.inputArbiter
+    generic map(size => requests'length)
     port map(
         requests => h,
         enable => enable,
