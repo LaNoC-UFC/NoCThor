@@ -21,40 +21,23 @@ begin
 
     process(enable)
         variable designedPort : integer range 0 to (NPORT-1);
-    begin
+        variable requestCheck : integer range 0 to (NPORT-1);
+    begin        
         if rising_edge(enable) then
-            case lastPort is
-                when LOCAL=>
-                    if requests(EAST)='1' then designedPort := EAST;
-                    elsif requests(WEST)='1' then designedPort := WEST;
-                    elsif requests(NORTH)='1' then designedPort := NORTH;
-                    elsif requests(SOUTH)='1' then designedPort := SOUTH;
-                    else designedPort := LOCAL; end if;
-                when EAST=>
-                    if requests(WEST)='1' then designedPort := WEST;
-                    elsif requests(NORTH)='1' then designedPort := NORTH;
-                    elsif requests(SOUTH)='1' then designedPort := SOUTH;
-                    elsif requests(LOCAL)='1' then designedPort := LOCAL;
-                    else designedPort := EAST; end if;
-                when WEST=>
-                    if requests(NORTH)='1' then designedPort := NORTH;
-                    elsif requests(SOUTH)='1' then designedPort := SOUTH;
-                    elsif requests(LOCAL)='1' then designedPort := LOCAL;
-                    elsif requests(EAST)='1' then designedPort := EAST;
-                    else designedPort := WEST; end if;
-                when NORTH=>
-                    if requests(SOUTH)='1' then designedPort := SOUTH;
-                    elsif requests(LOCAL)='1' then designedPort := LOCAL;
-                    elsif requests(EAST)='1' then designedPort := EAST;
-                    elsif requests(WEST)='1' then designedPort := WEST;
-                    else designedPort := NORTH; end if;
-                when SOUTH=>
-                    if requests(LOCAL)='1' then designedPort := LOCAL;
-                    elsif requests(EAST)='1' then designedPort := EAST;
-                    elsif requests(WEST)='1' then designedPort := WEST;
-                    elsif requests(NORTH)='1' then designedPort := NORTH;
-                    else designedPort := SOUTH; end if;
-            end case;
+            requestCheck := lastPort;
+            designedPort := lastPort;
+            for i in 0 to NPORT-1 loop
+                if(requestCheck = NPORT-1) then
+                    requestCheck := 0;
+                else
+                    requestCheck := requestCheck + 1;
+                end if;
+
+                if(requests(requestCheck) = '1') then
+                    designedPort := requestCheck;
+                    exit;
+                end if;
+            end loop;
             lastPort <= designedPort;
             nextPort <= designedPort;
         end if;
