@@ -35,9 +35,9 @@ signal sent : std_logic;
 
 begin
 
-    circularFifoBuffer : entity work.FifoBuffer
-    generic map(B_DEPTH => TAM_BUFFER ,
-                B_WIDTH => regflit'length)
+    circularFifoBuffer : entity work.fifo_buffer
+    generic map(BUFFER_DEPTH => TAM_BUFFER ,
+                BUFFER_WIDTH => regflit'length)
     port map(
         reset =>     reset,
         clock =>     clock_rx,
@@ -50,7 +50,7 @@ begin
 
     data <= bufferHead;
     data_av <= has_data_and_sending;
-    credit_o <= '1' when (counter /= TAM_BUFFER) else '0';
+    credit_o <= '1' when (counter /= TAM_BUFFER or pull = '1') else '0';
     sender <= sending;
     h <= has_data and not sending;
 
