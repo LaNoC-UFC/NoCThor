@@ -46,12 +46,13 @@ begin
     incoming <= std_logic_vector(to_unsigned(sel, incoming'length));
     header <= data(TO_INTEGER(unsigned(incoming)));
 
-    InputArbiter : entity work.inputArbiter
+    RoundRobinArbiter : entity work.arbiter(RoundRobinArbiter)
+    generic map(size => requests'length)
     port map(
         requests => h,
         enable => enable,
-        nextPort => prox,
-        ready => ready
+        selectedOutput => prox,
+        isOutputSelected => ready
     );
 
     RoutingMechanism : entity work.routingMechanism
@@ -66,7 +67,7 @@ begin
        find => find
     );
 
-    OutputArbiter : entity work.outputArbiter
+    FixedPriorityArbiter : entity work.arbiter(FixedPriorityArbiter)
     generic map(size => requests'length)
     port map(
         requests                => requests,

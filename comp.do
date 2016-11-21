@@ -18,8 +18,7 @@ set source_files {
     NoC/Thor_RM.vhd
     NoC/fifo_buffer.vhd
     NoC/Thor_buffer.vhd
-    NoC/outputArbiter.vhd
-    NoC/inputArbiter.vhd
+    NoC/arbiter.vhd
     NoC/Thor_switchcontrol.vhd
     NoC/Thor_crossbar.vhd
     NoC/RouterCC.vhd
