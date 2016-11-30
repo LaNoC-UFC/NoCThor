@@ -56,7 +56,7 @@ begin
     );
 
     RoutingMechanism : entity work.routingMechanism
-    generic map(ramInit => ramInit)
+    generic map(ramInit => ramInit , LOCAL_ADDRESS => address)
     port map(
        clock => clock,
        reset => reset,
@@ -140,7 +140,7 @@ begin
                         indice_dir <= LOCAL;
                     elsif(find = validRegion and isOutputSelected = '1') then
                         indice_dir <= selectedOutput;
-                    elsif (address /= header) then
+                    elsif (address/= header) then
                         ceTable <= '1';
                     end if;
                 when S4 =>
