@@ -5,7 +5,9 @@ use work.NoCPackage.all;
 use work.TablePackage.all;
 
 entity routingMechanism is
-    generic(ramInit : memory := (others=>(others=>'0')));
+    generic(        
+        LOCAL_ADDRESS : regflit;
+        ramInit : memory := (others=>(others=>'0')));
     port(
         clock :   in  std_logic;
         reset :   in  std_logic;
@@ -67,3 +69,32 @@ begin
 
 end behavior;
 
+architecture DOR_XY of routingMechanism is
+    signal local_x :natural;
+    signal dest_x  :natural;
+    signal local_y :natural;
+    signal dest_y  :natural;
+    
+begin
+    local_x <= X_COORDINATE(LOCAL_ADDRESS);
+    local_y <= Y_COORDINATE(LOCAL_ADDRESS);
+    dest_x <= X_COORDINATE(dst_address);
+    dest_y <= Y_COORDINATE(dst_address);
+    find <= validRegion;
+    process(local_x, dest_x, local_y, dest_y)
+    begin
+            outputPort <= (others => '0');
+            if dest_y < local_y then
+                 outputPort(SOUTH) <= '1';
+            elsif dest_y > local_y then
+                 outputPort(NORTH) <= '1';
+            elsif dest_x > local_x then
+                 outputPort(EAST) <='1';
+            elsif dest_x < local_x then
+                 outputPort(WEST) <= '1';
+            else
+                 outputPort(LOCAL) <= '1';
+            end if;
+        end process;
+
+end architecture DOR_XY;
