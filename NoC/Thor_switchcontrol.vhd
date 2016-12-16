@@ -56,7 +56,10 @@ begin
     );
 
     RoutingMechanism : entity work.routingMechanism
-    generic map(ramInit => ramInit)
+    generic map(
+        ramInit => ramInit,
+        LOCAL_ADDRESS => address
+    )
     port map(
        clock => clock,
        reset => reset,
