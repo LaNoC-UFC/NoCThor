@@ -50,18 +50,23 @@ begin
 
     end generate;
 
-    process(RAM, H, oe)
+    process(RAM, H, oe, dst_address)
     begin
         data <= (others=>'Z');
         find <= invalidRegion;
         if oe = '1' then
-            for i in 0 to (NREG-1) loop
-                if H(i) = '1' then
-                    data <= RAM(i)(NPORT-1 downto 0);
-                    find <= validRegion;
-                    exit;
-                end if;
-            end loop;
+            if LOCAL_ADDRESS = dst_address then
+                data <= (LOCAL=>'1', others=>'0');
+                find <= validRegion;
+            else
+                for i in 0 to (NREG-1) loop
+                    if H(i) = '1' then
+                        data <= RAM(i)(NPORT-1 downto 0);
+                        find <= validRegion;
+                        exit;
+                    end if;
+                end loop;
+            end if;
         end if;
     end process;
 
