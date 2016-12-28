@@ -26,7 +26,7 @@ architecture behavior of routingMechanism is
     type row is array ((NREG-1) downto 0) of integer;
     signal bottom_left_x, bottom_left_y, top_right_x, top_right_y : row;
     signal H : std_logic_vector((NREG-1) downto 0);
-    type arrayIP is array ((NREG-1) downto 0) of std_logic_vector(4 downto 0);
+    type arrayIP is array ((NREG-1) downto 0) of ports;
     signal IP : arrayIP;
     signal RAM: memory := ramInit;
 
@@ -37,11 +37,11 @@ begin
 
     cond: for j in 0 to (NREG - 1) generate
 
-        IP(j) <= RAM(j)(CELL_SIZE-1 downto CELL_SIZE-5) when oe = '1' else (others=>'0');
-        bottom_left_x(j) <= TO_INTEGER(unsigned(RAM(j)(CELL_SIZE-6 downto CELL_SIZE-5-NBITS))) when oe = '1' else 0;
-        bottom_left_y(j) <= TO_INTEGER(unsigned(RAM(j)(CELL_SIZE-6-NBITS downto CELL_SIZE-5-2*NBITS))) when oe = '1' else 0;
-        top_right_x(j) <= TO_INTEGER(unsigned(RAM(j)(CELL_SIZE-6-2*NBITS downto CELL_SIZE-5-3*NBITS))) when oe = '1' else 0;
-        top_right_y(j) <= TO_INTEGER(unsigned(RAM(j)(CELL_SIZE-6-3*NBITS downto 5))) when oe = '1' else 0;
+        IP(j) <= input_ports(RAM(j)) when oe = '1' else (others=>'0');
+        bottom_left_x(j) <= lower_left_x(RAM(j)) when oe = '1' else 0;
+        bottom_left_y(j) <= lower_left_y(RAM(j)) when oe = '1' else 0;
+        top_right_x(j) <= upper_right_x(RAM(j)) when oe = '1' else 0;
+        top_right_y(j) <= upper_right_y(RAM(j)) when oe = '1' else 0;
 
         H(j) <= '1' when dst_x >= bottom_left_x(j) and dst_x <= top_right_x(j) and
                           dst_y >= bottom_left_y(j) and dst_y <= top_right_y(j) and
@@ -61,7 +61,7 @@ begin
             else
                 for i in 0 to (NREG-1) loop
                     if H(i) = '1' then
-                        data <= RAM(i)(NPORT-1 downto 0);
+                        data <= output_ports(RAM(i));
                         find <= validRegion;
                         exit;
                     end if;
