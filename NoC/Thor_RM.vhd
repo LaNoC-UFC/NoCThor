@@ -21,7 +21,6 @@ end routingMechanism;
 
 architecture behavior of routingMechanism is
 
-    signal data : regNPort := (others=>'0');
     signal dst_x, dst_y : integer;
     type row is array ((NREG-1) downto 0) of integer;
     signal bottom_left_x, bottom_left_y, top_right_x, top_right_y : row;
@@ -51,26 +50,26 @@ begin
     end generate;
 
     process(RAM, H, oe, dst_address)
+        variable data : regNPort;
     begin
-        data <= (others=>'Z');
+        data := (others=>'0');
         find <= invalidRegion;
         if oe = '1' then
             if LOCAL_ADDRESS = dst_address then
-                data <= (LOCAL=>'1', others=>'0');
+                data := (LOCAL=>'1', others=>'0');
                 find <= validRegion;
             else
                 for i in 0 to (NREG-1) loop
                     if H(i) = '1' then
-                        data <= output_ports(RAM(i));
+                        data := data or output_ports(RAM(i));
                         find <= validRegion;
                         exit;
                     end if;
                 end loop;
             end if;
         end if;
+        outputPort <= data;
     end process;
-
-    outputPort <= data;
 
 end behavior;
 
